@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_dark"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/contact_list_swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/contact_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <zhexian.app.smartcall.ui.LetterSideBar
+            android:id="@+id/contact_letter_side_bar"
+            android:layout_width="28dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
+
+        <TextView
+            android:id="@+id/contact_group_char"
+            android:layout_width="@dimen/normal_item_height"
+            android:layout_height="@dimen/normal_item_height"
+            android:layout_marginRight="30dp"
+            android:layout_toLeftOf="@id/contact_letter_side_bar"
+            android:background="@drawable/circle_blue"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="40sp"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/bar_keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/search_bar_height"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <EditText
+            android:id="@+id/bar_keyboard_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/white"
+            android:hint="支持拼音、简拼、汉字搜索姓名"
+            android:textColor="@color/gray_dark"
+            android:textColorHint="@color/gray_light" />
+
+        <ImageView
+            android:id="@+id/bar_keyboard_btn"
+            android:layout_width="@dimen/icon_small_size"
+            android:layout_height="@dimen/icon_small_size"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="3dp"
+            android:clickable="true"
+            android:src="@drawable/bar_keyboard_background" />
+    </LinearLayout>
+</LinearLayout>
+

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objectAnimator xmlns:android="http://schemas.android.com/apk/res/android"
+    android:duration="300"
+    android:propertyName="backgroundColor"
+    android:repeatMode="reverse"
+    android:valueFrom="@color/white_alpha"
+    android:valueTo="@color/white" />

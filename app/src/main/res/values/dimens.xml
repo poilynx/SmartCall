@@ -1,0 +1,17 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="normal_item_height">74dp</dimen>
+    <dimen name="group_item_height">104dp</dimen>
+    <dimen name="navigator_text_height">24dp</dimen>
+    <dimen name="navigator_text_size">18sp</dimen>
+
+    <dimen name="icon_small_size">32dp</dimen>
+    <dimen name="icon_normal_size">64dp</dimen>
+    <dimen name="icon_big_size">128dp</dimen>
+    <dimen name="flat_bar_height">100dp</dimen>
+    <dimen name="action_bar_height">40dp</dimen>
+    <dimen name="t9_keyboard_height">240dp</dimen>
+    <dimen name="search_bar_height">44dp</dimen>
+</resources>

@@ -1,0 +1,266 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/blue_light"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context="zhexian.app.smartcall.ContactDetailActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/detail_back"
+            android:layout_width="@dimen/icon_normal_size"
+            android:layout_height="@dimen/icon_normal_size"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/alpha_btn_background"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:src="@drawable/back_icon" />
+
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/detail_avatar"
+            android:layout_width="@dimen/icon_big_size"
+            android:layout_height="@dimen/icon_big_size"
+
+            android:layout_centerInParent="true"
+            app:riv_border_color="@color/white_dark"
+            app:riv_border_width="1dp"
+            app:riv_corner_radius="50dp" />
+
+        <TextView
+            android:id="@+id/detail_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/detail_avatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textSize="40sp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white_dark"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_company_prefix"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="公司"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/detail_company"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textSize="19sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_department_prefix"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="部门"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/detail_department"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textSize="19sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/detail_job_prefix"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="职位"
+                    android:textColor="@color/gray_dark"
+                    android:textSize="19sp" />
+
+                <TextView
+                    android:id="@+id/detail_job"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray"
+                    android:textSize="19sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/detail_phone_container"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="5dp"
+            app:elevation="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/detail_phone_number_container"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/detail_phone_number"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/alpha_btn_background"
+                        android:gravity="left|center_vertical"
+                        android:padding="5dp"
+                        android:textColor="@color/gray"
+                        android:textSize="21sp" />
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_small_size"
+                        android:layout_height="@dimen/icon_small_size"
+                        android:layout_gravity="right|center_vertical"
+                        android:background="@drawable/alpha_btn_background"
+                        android:src="@drawable/call_btn" />
+                </LinearLayout>
+
+
+                <View style="@style/horizontal_split_view" />
+
+                <ImageView
+                    android:id="@+id/detail_phone_message"
+                    android:layout_width="@dimen/icon_small_size"
+                    android:layout_height="@dimen/icon_small_size"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/alpha_btn_background"
+                    android:src="@drawable/message_icon" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/detail_short_phone_container"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="5dp"
+            app:elevation="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/detail_short_phone_number_container"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/detail_short_phone_number"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/alpha_btn_background"
+                        android:gravity="left|center_vertical"
+                        android:padding="5dp"
+                        android:textColor="@color/gray"
+                        android:textSize="21sp" />
+
+                    <ImageView
+                        android:layout_width="@dimen/icon_small_size"
+                        android:layout_height="@dimen/icon_small_size"
+                        android:layout_gravity="right|center_vertical"
+                        android:background="@drawable/alpha_btn_background"
+                        android:src="@drawable/call_btn" />
+                </LinearLayout>
+
+                <View style="@style/horizontal_split_view" />
+
+                <ImageView
+                    android:id="@+id/detail_short_phone_message"
+                    android:layout_width="@dimen/icon_small_size"
+                    android:layout_height="@dimen/icon_small_size"
+                    android:layout_gravity="right|center_vertical"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/alpha_btn_background"
+                    android:src="@drawable/message_icon" />
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <LinearLayout
+            android:id="@+id/detail_local_contact"
+            android:layout_width="wrap_content"
+            android:layout_height="66dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/btn_background"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/detail_local_contact_icon"
+                android:layout_width="@dimen/icon_small_size"
+                android:layout_height="wrap_content"
+                android:src="@drawable/contact_normal" />
+
+            <TextView
+                android:id="@+id/detail_local_contact_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:gravity="center"
+                android:text="添加到本地联系人 "
+                android:textColor="@color/white_dark"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
