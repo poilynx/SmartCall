@@ -85,7 +85,7 @@ public class NotifyBar {
         mNotifyText = (TextView) mNotifyView.findViewById(R.id.notify_text);
         mProgress = mNotifyView.findViewById(R.id.notify_progress);
         mIcon = (ImageView) mNotifyView.findViewById(R.id.notify_icon);
-        slideAnimation = Utils.GenerateAlphaAnimator(mActivity, R.animator.notify_bar_vertical_slide, mNotifyView);
+        slideAnimation = Utils.GenerateSlideAnimator(mActivity, R.animator.notify_bar_vertical_slide, mNotifyView);
 
         mWindowManager.addView(mNotifyView, mNotifyViewLayout);
         mIsAddedView = true;

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">众和电话本</string>
     <string name="login_title">登陆众和软件</string>
-    <string name="service_url" formatted="false">http://192.168.1.5:3900/u/%s/%s</string>
+    <string name="service_url" formatted="false">http://192.168.1.100:3900/u/%s/%s</string>
 
     <string name="alert_network_not_available">网络不可用，请检查网络并重试</string>
     <string name="alert_login_failed">登陆失败，请检查输入并重试</string>

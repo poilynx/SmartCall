@@ -24,7 +24,7 @@ public class Utils {
         return colorAnimation;
     }
 
-    public static ObjectAnimator GenerateAlphaAnimator(Context context, int animatorID, Object target) {
+    public static ObjectAnimator GenerateSlideAnimator(Context context, int animatorID, Object target) {
         ObjectAnimator alphaAnimation = (ObjectAnimator) AnimatorInflater.loadAnimator(context, animatorID);
         alphaAnimation.setTarget(target);
         alphaAnimation.setEvaluator(new FloatEvaluator());

@@ -16,9 +16,11 @@ public class BaseApplication extends Application {
     private static final String PARAM_PASSWORD = "zhexian.app.smartcall.base.PARAM_PASSWORD";
     private static final String PARAM_IS_LOGIN = "zhexian.app.smartcall.base.PARAM_IS_LOGIN";
     private static final String PARAM_IS_LOAD_MOST_AVATARS = "zhexian.app.smartcall.base.PARAM_IS_LOAD_MOST_AVATARS";
+    private static final String PARAM_IS_READ_INTRODUCE = "zhexian.app.smartcall.base.PARAM_IS_READ_INTRODUCE";
     private SharedPreferences mSp;
     private boolean mIsCallShort;
     private boolean mIsLoadMostAvatars;
+    private boolean mIsReadIntroduce;
     private String mServiceUrl;
     private String mUserName;
     private String mPassword;
@@ -39,7 +41,7 @@ public class BaseApplication extends Application {
         mIsCallShort = mSp.getBoolean(PARAM_CALL_SHORT, false);
         mIsLogin = mSp.getBoolean(PARAM_IS_LOGIN, false);
         mIsLoadMostAvatars = mSp.getBoolean(PARAM_IS_LOAD_MOST_AVATARS, false);
-
+        mIsReadIntroduce = mSp.getBoolean(PARAM_IS_READ_INTRODUCE, false);
         mFilePath = Environment.isExternalStorageEmulated() ? getExternalFilesDir(null).getAbsolutePath() : getFilesDir().getAbsolutePath();
         mFilePath += "/";
         mNetWorkStatus = ZHttp.GetConnectType(this);
@@ -167,5 +169,17 @@ public class BaseApplication extends Application {
 
         mIsLoadMostAvatars = isLoadMostAvatars;
         mSp.edit().putBoolean(PARAM_IS_LOAD_MOST_AVATARS, mIsLoadMostAvatars).apply();
+    }
+
+    public boolean isReadIntroduce() {
+        return mIsReadIntroduce;
+    }
+
+    public void setIsReadIntroduce(boolean isReadIntroduce) {
+        if (mIsReadIntroduce == isReadIntroduce)
+            return;
+
+        mIsReadIntroduce = isReadIntroduce;
+        mSp.edit().putBoolean(PARAM_IS_READ_INTRODUCE, mIsReadIntroduce).apply();
     }
 }
