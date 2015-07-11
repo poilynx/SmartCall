@@ -13,7 +13,7 @@ import zhexian.app.smartcall.ContactDetailActivity;
 import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseActivity;
 import zhexian.app.smartcall.base.BaseApplication;
-import zhexian.app.smartcall.lib.ZImage;
+import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.tools.DoAction;
 import zhexian.app.smartcall.tools.Utils;
 import zhexian.app.smartcall.ui.NotifyBar;

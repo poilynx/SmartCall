@@ -1,4 +1,4 @@
-package zhexian.app.smartcall.lib;
+package zhexian.app.smartcall.image;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -7,14 +7,11 @@ import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
-import java.util.HashMap;
-
 import zhexian.app.smartcall.R;
-import zhexian.app.smartcall.async.LoadImageTask;
-import zhexian.app.smartcall.async.LoadImageTask.ILoadImageCallBack;
-import zhexian.app.smartcall.async.SaveImageTask;
-import zhexian.app.smartcall.async.ThreadPoolManager;
 import zhexian.app.smartcall.base.BaseApplication;
+import zhexian.app.smartcall.image.LoadImageTask.ILoadImageCallBack;
+import zhexian.app.smartcall.lib.ZIO;
+import zhexian.app.smartcall.lib.ZString;
 import zhexian.app.smartcall.tools.Utils;
 
 public class ZImage implements ILoadImageCallBack {
@@ -31,7 +28,6 @@ public class ZImage implements ILoadImageCallBack {
     private static final int CACHED_MEMORY_SIZE = 20 * 1024 * 1024;
     private static ZImage mZImage;
     LruCache<String, Bitmap> mMemoryCache;
-    private HashMap<String, ImageView> imageRequestList;
 
     private BaseApplication mApp;
     private Bitmap placeHolderBitmap;
@@ -39,7 +35,6 @@ public class ZImage implements ILoadImageCallBack {
     public ZImage(Activity activity) {
         mApp = (BaseApplication) activity.getApplication();
         placeHolderBitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.user_default);
-        imageRequestList = new HashMap<>();
 
         mMemoryCache = new LruCache<String, Bitmap>(CACHED_MEMORY_SIZE) {
             protected int sizeOf(String key, Bitmap bitmap) {
@@ -74,6 +69,7 @@ public class ZImage implements ILoadImageCallBack {
             return;
         }
         Bitmap bitmap = getFromMemoryCache(url);
+        imageView.setTag(url);
 
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
@@ -99,17 +95,7 @@ public class ZImage implements ILoadImageCallBack {
         if (!canQueryHttp)
             return;
 
-        if (imageRequestList.containsKey(url)) {
-            ImageView oldImageView = imageRequestList.remove(url);
-            oldImageView.setTag("");
-            imageView.setTag(url);
-            imageRequestList.put(url, imageView);
-            return;
-        }
-
-        imageView.setTag(url);
-        imageRequestList.put(url, imageView);
-        ThreadPoolManager.getInstance().addTask(new LoadImageTask(mApp, url, width, height, isCache, this));
+        ImageTaskManager.getInstance().addTask(new LoadImageTask(mApp, imageView, url, width, height, isCache, this));
     }
 
     public Bitmap getBitMap(String url) {
@@ -136,7 +122,7 @@ public class ZImage implements ILoadImageCallBack {
     }
 
     public void saveToLocal(String url, int width, int height) {
-        ThreadPoolManager.getInstance().addTask(new SaveImageTask(mApp, url, width, height));
+        ImageTaskManager.getInstance().addTask(new SaveImageTask(mApp, url, width, height));
     }
 
     Bitmap getFromMemoryCache(String url) {
@@ -149,15 +135,14 @@ public class ZImage implements ILoadImageCallBack {
     }
 
     @Override
-    public void onDone(String url, Bitmap bitmap, boolean isCache) {
-        ImageView imageView = imageRequestList.remove(url);
+    public void onDone(String url, ImageView imageView, Bitmap bitmap, boolean isCache) {
         String originalUrl = (String) imageView.getTag();
 
-        if (originalUrl != null && originalUrl.equals(url))
+        if (originalUrl != null && originalUrl.equals(url)) {
             imageView.setImageBitmap(bitmap);
 
-        if (isCache && getFromMemoryCache(url) == null)
-            putToMemoryCache(url, bitmap);
-
+            if (isCache && getFromMemoryCache(url) == null)
+                putToMemoryCache(url, bitmap);
+        }
     }
 }

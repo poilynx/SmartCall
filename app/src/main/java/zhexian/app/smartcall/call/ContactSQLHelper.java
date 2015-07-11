@@ -21,10 +21,7 @@ public class ContactSQLHelper {
 
     public static void Init(Context context) {
         if (mContactSQLHelper == null) {
-            synchronized (ContactSQLHelper.class) {
-                if (mContactSQLHelper == null)
-                    mContactSQLHelper = new ContactSQLHelper(context);
-            }
+            mContactSQLHelper = new ContactSQLHelper(context);
         }
     }
 

@@ -156,6 +156,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     }
 
     class LoginTask extends AsyncTask<Void, Void, Boolean> {
+
         @Override
         protected void onPreExecute() {
             notify.show(R.string.notify_login, NotifyBar.IconType.Progress);

@@ -70,7 +70,7 @@ public class CallFlatWindowManager {
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
         LayoutInflater inflater = (LayoutInflater) baseApp.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        view = inflater.inflate(R.layout.call_flat_window, null);
+        view = inflater.inflate(R.layout.flat_call_window, null);
 
         mUserName = (TextView) view.findViewById(R.id.flat_user_name);
         imageView = (ImageView) view.findViewById(R.id.flat_user_avatar);

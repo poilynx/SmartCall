@@ -11,13 +11,10 @@ import com.squareup.okhttp.Request.Builder;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import zhexian.app.smartcall.tools.Utils;
 
-/**
- * Created by kimmy on 2015/5/16.
- */
+
 public class ZHttp {
     private static OkHttpClient mOkHttpClient;
 
@@ -26,8 +23,7 @@ public class ZHttp {
         if (mOkHttpClient == null) {
             synchronized (ZHttp.class) {
                 mOkHttpClient = new OkHttpClient();
-                mOkHttpClient.setConnectTimeout(12, TimeUnit.SECONDS);
-                mOkHttpClient.setReadTimeout(12, TimeUnit.SECONDS);
+
             }
         }
         return mOkHttpClient;

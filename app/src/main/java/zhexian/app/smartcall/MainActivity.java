@@ -7,7 +7,7 @@ import android.util.DisplayMetrics;
 
 import zhexian.app.smartcall.base.BaseActivity;
 import zhexian.app.smartcall.call.ContactSQLHelper;
-import zhexian.app.smartcall.lib.ZImage;
+import zhexian.app.smartcall.image.ZImage;
 
 public class MainActivity extends BaseActivity {
     public static void actionStart(Activity context) {

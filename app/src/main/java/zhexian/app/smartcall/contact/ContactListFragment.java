@@ -30,9 +30,9 @@ import java.util.TimerTask;
 
 import zhexian.app.smartcall.MainActivity;
 import zhexian.app.smartcall.R;
-import zhexian.app.smartcall.async.ThreadPoolManager;
 import zhexian.app.smartcall.base.BaseActivity;
 import zhexian.app.smartcall.base.BaseApplication;
+import zhexian.app.smartcall.image.ImageTaskManager;
 import zhexian.app.smartcall.lib.ZContact;
 import zhexian.app.smartcall.tools.Format;
 import zhexian.app.smartcall.tools.Utils;
@@ -42,7 +42,7 @@ import zhexian.app.smartcall.ui.NotifyBar;
 
 public class ContactListFragment extends Fragment implements LetterSideBar.OnLetterChangedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int REFRESH_PROCESS_IMAGE_DURATION = 100;
-    private static final int MIN_TO_SHOW_TASK_BAR = 30;
+    private static final int MIN_TO_SHOW_TASK_BAR = 20;
     private static final int MESSAGE_REFRESH_COUNT = 1;
     private static final int MESSAGE_DONE = 2;
 
@@ -120,7 +120,8 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
             }
         });
 
-        showImageProcessBar(MIN_TO_SHOW_TASK_BAR);
+        if (!baseApp.isLoadMostAvatars())
+            showImageProcessBar();
     }
 
     @Override
@@ -207,13 +208,8 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         return -1;
     }
 
-    void showImageProcessBar(int minToShow) {
+    void showImageProcessBar() {
         if (!baseApp.isNetworkWifi())
-            return;
-
-        int processCount = ThreadPoolManager.getInstance().getLeftTaskCount();
-
-        if (processCount <= minToShow)
             return;
 
         isLoadingImage = true;
@@ -225,6 +221,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 if (msg.what == MESSAGE_REFRESH_COUNT) {
                     baseActivity.notify.show(String.format("正在玩命加载头像，剩余%d", msg.arg1), NotifyBar.IconType.Progress);
                 } else if (msg.what == MESSAGE_DONE) {
+                    baseApp.setIsLoadMostAvatars(true);
                     baseActivity.notify.show("已全部加载完毕：）", NotifyBar.IconType.Success);
                     baseActivity.notify.hide(2000);
                 }
@@ -235,7 +232,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         final TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                int size = ThreadPoolManager.getInstance().getLeftTaskCount();
+                int size = ImageTaskManager.getInstance().getLeftTaskCount();
 
                 if (size <= 0) {
                     isLoadingImage = false;
@@ -403,8 +400,10 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                     letterSideBar.invalidate();
                     mSearchText.setText("");
                     baseActivity.notify.show(alertStr, NotifyBar.DURATION_MIDDLE, NotifyBar.IconType.Success);
+
+                    if (addAmount > MIN_TO_SHOW_TASK_BAR)
+                        showImageProcessBar();
                 }
-                showImageProcessBar(MIN_TO_SHOW_TASK_BAR);
             } else {
                 Utils.toast(baseApp, R.string.alert_refresh_failed);
                 baseApp.setIsLogin(false);

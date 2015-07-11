@@ -9,18 +9,16 @@ import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.lib.ZHttp;
 import zhexian.app.smartcall.lib.ZIO;
 
-/**
- * Created by Administrator on 2015/5/6.
- */
 public class BaseApplication extends Application {
     private static final String PARAM_CALL_SHORT = "zhexian.app.smartcall.base.PARAM_CALL_SHORT";
     private static final String PARAM_SERVICE_URL = "zhexian.app.smartcall.base.PARAM_SERVICE_URL";
     private static final String PARAM_USER_NAME = "zhexian.app.smartcall.base.PARAM_USER_NAME";
     private static final String PARAM_PASSWORD = "zhexian.app.smartcall.base.PARAM_PASSWORD";
     private static final String PARAM_IS_LOGIN = "zhexian.app.smartcall.base.PARAM_IS_LOGIN";
-
+    private static final String PARAM_IS_LOAD_MOST_AVATARS = "zhexian.app.smartcall.base.PARAM_IS_LOAD_MOST_AVATARS";
     private SharedPreferences mSp;
     private boolean mIsCallShort;
+    private boolean mIsLoadMostAvatars;
     private String mServiceUrl;
     private String mUserName;
     private String mPassword;
@@ -40,6 +38,8 @@ public class BaseApplication extends Application {
         mPassword = mSp.getString(PARAM_PASSWORD, "");
         mIsCallShort = mSp.getBoolean(PARAM_CALL_SHORT, false);
         mIsLogin = mSp.getBoolean(PARAM_IS_LOGIN, false);
+        mIsLoadMostAvatars = mSp.getBoolean(PARAM_IS_LOAD_MOST_AVATARS, false);
+
         mFilePath = Environment.isExternalStorageEmulated() ? getExternalFilesDir(null).getAbsolutePath() : getFilesDir().getAbsolutePath();
         mFilePath += "/";
         mNetWorkStatus = ZHttp.GetConnectType(this);
@@ -154,5 +154,18 @@ public class BaseApplication extends Application {
 
         mIsLogin = isLogin;
         mSp.edit().putBoolean(PARAM_IS_LOGIN, mIsLogin).apply();
+    }
+
+    public boolean isLoadMostAvatars() {
+        return mIsLoadMostAvatars;
+    }
+
+    public void setIsLoadMostAvatars(boolean isLoadMostAvatars) {
+
+        if (mIsLoadMostAvatars == isLoadMostAvatars)
+            return;
+
+        mIsLoadMostAvatars = isLoadMostAvatars;
+        mSp.edit().putBoolean(PARAM_IS_LOAD_MOST_AVATARS, mIsLoadMostAvatars).apply();
     }
 }

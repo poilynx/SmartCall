@@ -10,9 +10,9 @@ import java.util.List;
 
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
+import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.lib.ZHttp;
 import zhexian.app.smartcall.lib.ZIO;
-import zhexian.app.smartcall.lib.ZImage;
 import zhexian.app.smartcall.tools.PinYinTool;
 import zhexian.app.smartcall.tools.Utils;
 
@@ -44,14 +44,25 @@ public class Dal {
 
                 db.execSQL("insert into contact (phoneNo,shortPhoneNo,userName,jobTitle,avatarUrl) values(?,?,?,?,?)",
                         new String[]{entity.getPhone(), entity.getShortPhone(), entity.getUserName(), entity.getJobTitle(), entity.getAvatarURL()});
-
-                if (baseApp.isNetworkWifi())
-                    ZImage.getInstance().saveToLocal(entity.getAvatarURL(), Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE);
             }
+
             db.setTransactionSuccessful();
             db.endTransaction();
 
             Collections.sort(list);
+
+            if (baseApp.isNetworkWifi()) {
+                int maxIndex = list.size() - 1;
+
+                for (int i = maxIndex; i >= 0; i--) {
+                    ContactEntity entity = list.get(i);
+
+                    if (!entity.getAvatarURL().isEmpty()) {
+                        ZImage.getInstance().saveToLocal(entity.getAvatarURL(), Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE);
+                    }
+                }
+            }
+
             baseApp.saveToFile(CONTACTS_FILE_NAME, LoganSquare.serialize(list, ContactEntity.class));
 
             return true;
@@ -81,7 +92,7 @@ public class Dal {
     }
 
     /**
-     * @param baseUrl  zhong360.com/user.asmx?u=%s&p=%s
+     * @param baseUrl 地址
      * @param userName 用户名
      * @param password 密码
      * @return json字符串，登陆失败，则返回空''

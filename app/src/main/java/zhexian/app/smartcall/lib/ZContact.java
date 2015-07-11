@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 
 import zhexian.app.smartcall.contact.ContactEntity;
+import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.tools.Utils;
 
 import static android.provider.ContactsContract.Data.CONTENT_URI;
