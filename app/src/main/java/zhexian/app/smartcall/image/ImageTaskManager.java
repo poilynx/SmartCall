@@ -42,8 +42,8 @@ public class ImageTaskManager {
                 oldTask.onCancel();
 
             String loadKey = String.format("%d_%s", BaseImageAsyncTask.SAVE_IMAGE_TASK_ID, task.getUrl());
-            taskUrlList.remove(loadKey);
-            taskHaspMap.remove(loadKey);
+            if (taskUrlList.remove(loadKey))
+                taskHaspMap.remove(loadKey);
         }
 
         taskUrlList.push(url);
