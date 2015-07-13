@@ -15,6 +15,8 @@ public class ImageTaskManager {
     Stack<String> taskUrlList;
     ExecutorService threadPool;
     int currentOperateSize = 0;
+    private int saveTaskCount = 0;
+    private int loadTaskCount = 0;
 
     private ImageTaskManager() {
         threadPool = Executors.newFixedThreadPool(MAX_OPERATE_THREAD_SIZE);
@@ -33,17 +35,26 @@ public class ImageTaskManager {
 
     public synchronized void addTask(BaseImageAsyncTask task) {
         String url = task.getUniqueUrl();
-        taskUrlList.remove(url);
+        int taskID = task.getTaskId();
+        //不包含该任务，则任务计数器+1
+        if (!taskUrlList.remove(url)) {
+            if (taskID == BaseImageAsyncTask.SAVE_IMAGE_TASK_ID)
+                saveTaskCount++;
+            else if (taskID == BaseImageAsyncTask.LOAD_IMAGE_TASK_ID)
+                loadTaskCount++;
+        }
 
-        if (task.getTaskId() == BaseImageAsyncTask.LOAD_IMAGE_TASK_ID) {
+        if (saveTaskCount > 0 && taskID == BaseImageAsyncTask.LOAD_IMAGE_TASK_ID) {
             BaseImageAsyncTask oldTask = taskHaspMap.remove(url);
 
             if (oldTask != null)
                 oldTask.onCancel();
 
             String loadKey = String.format("%d_%s", BaseImageAsyncTask.SAVE_IMAGE_TASK_ID, task.getUrl());
-            if (taskUrlList.remove(loadKey))
+            if (taskUrlList.remove(loadKey)) {
                 taskHaspMap.remove(loadKey);
+                saveTaskCount--;
+            }
         }
 
         taskUrlList.push(url);
@@ -77,8 +88,14 @@ public class ImageTaskManager {
         }
     }
 
-    public void Done() {
+    public void Done(int taskID) {
         currentOperateSize--;
+
+        if (taskID == BaseImageAsyncTask.SAVE_IMAGE_TASK_ID)
+            saveTaskCount--;
+        else if (taskID == BaseImageAsyncTask.LOAD_IMAGE_TASK_ID)
+            loadTaskCount--;
+
         execTask();
     }
 

@@ -53,6 +53,29 @@ public class ContactSQLHelper {
         return entity;
     }
 
+    public String getSavedUrlList() {
+        StringBuilder sb = new StringBuilder();
+        Cursor cursor = getDb(true).rawQuery("select filePath from savedFile", null);
+
+        while (cursor.moveToNext()) {
+            sb.append(String.format("%s;", cursor.getString(0)));
+        }
+        return sb.toString();
+    }
+
+    public void addFilePath(String path) {
+        try {
+            getDb(false).execSQL("insert into savedFile(filePath) values(?)", new String[]{path});
+        } catch (Exception e) {
+            //重复数据不插
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteFilePath(String path) {
+        getDb(false).execSQL("delete from savedFile where filePath=?", new String[]{path});
+    }
+
     class ContactSQLiteDal extends SQLiteOpenHelper {
         public ContactSQLiteDal(Context context) {
             super(context, "companyContact.db", null, 1);
@@ -60,8 +83,8 @@ public class ContactSQLHelper {
 
         @Override
         public void onCreate(SQLiteDatabase sqLiteDatabase) {
-            String sqlStr = "create table contact (phoneNo text,shortPhoneNo text,userName text,jobTitle text,avatarUrl text);";
-            sqLiteDatabase.execSQL(sqlStr);
+            sqLiteDatabase.execSQL("create table contact (phoneNo text,shortPhoneNo text,userName text,jobTitle text,avatarUrl text);");
+            sqLiteDatabase.execSQL("create table savedFile(filePath text UNIQUE);");
         }
 
         @Override

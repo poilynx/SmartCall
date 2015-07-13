@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseApplication;
+import zhexian.app.smartcall.call.ContactSQLHelper;
 import zhexian.app.smartcall.image.LoadImageTask.ILoadImageCallBack;
 import zhexian.app.smartcall.lib.ZIO;
 import zhexian.app.smartcall.lib.ZString;
@@ -121,8 +122,16 @@ public class ZImage implements ILoadImageCallBack {
         return placeHolderBitmap;
     }
 
-    public void saveToLocal(String url, int width, int height) {
-        ImageTaskManager.getInstance().addTask(new SaveImageTask(mApp, url, width, height));
+    public void deleteFromLocal(String httpUrl) {
+
+        String cachedUrl = ZString.getFileCachedDir(httpUrl, mApp.getFilePath());
+        ZIO.deleteFile(cachedUrl);
+        ContactSQLHelper.getInstance().deleteFilePath(httpUrl);
+    }
+
+    public void saveToLocal(Bitmap bitmap, String httpUrl, String cachedUrl) {
+        ZIO.saveBitmapToCache(bitmap, cachedUrl);
+        ContactSQLHelper.getInstance().addFilePath(httpUrl);
     }
 
     Bitmap getFromMemoryCache(String url) {

@@ -10,7 +10,8 @@ import java.util.List;
 
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
-import zhexian.app.smartcall.image.ZImage;
+import zhexian.app.smartcall.image.ImageTaskManager;
+import zhexian.app.smartcall.image.SaveImageTask;
 import zhexian.app.smartcall.lib.ZHttp;
 import zhexian.app.smartcall.lib.ZIO;
 import zhexian.app.smartcall.tools.PinYinTool;
@@ -53,16 +54,15 @@ public class Dal {
 
             if (baseApp.isNetworkWifi()) {
                 int maxIndex = list.size() - 1;
-
+                String existsFileUrls = sqlHelper.getSavedUrlList();
                 for (int i = maxIndex; i >= 0; i--) {
                     ContactEntity entity = list.get(i);
 
-                    if (!entity.getAvatarURL().isEmpty()) {
-                        ZImage.getInstance().saveToLocal(entity.getAvatarURL(), Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE);
-                    }
+                    boolean isAvatarNew = !entity.getAvatarURL().isEmpty() && !existsFileUrls.contains(entity.getAvatarURL());
+                    if (isAvatarNew)
+                        ImageTaskManager.getInstance().addTask(new SaveImageTask(baseApp, entity.getAvatarURL(), Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE));
                 }
             }
-
             baseApp.saveToFile(CONTACTS_FILE_NAME, LoganSquare.serialize(list, ContactEntity.class));
 
             return true;
@@ -70,29 +70,29 @@ public class Dal {
             e.printStackTrace();
             return false;
         }
-
     }
 
 
     public static List<ContactEntity> readListFromJson(BaseApplication baseApp) {
-        String content;
         boolean isFileExist = baseApp.isLocalFileExist(CONTACTS_FILE_NAME);
-        List<ContactEntity> list = null;
 
-        if (isFileExist) {
-            content = baseApp.readFromFile(CONTACTS_FILE_NAME);
-            try {
-                list = LoganSquare.parseList(content, ContactEntity.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-                ZIO.deleteFile(baseApp.getFilePath() + CONTACTS_FILE_NAME);
-            }
+        if (!isFileExist)
+            return null;
+
+        try {
+            String content = baseApp.readFromFile(CONTACTS_FILE_NAME);
+            return LoganSquare.parseList(content, ContactEntity.class);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            ZIO.deleteFile(baseApp.getFilePath() + CONTACTS_FILE_NAME);
         }
-        return list;
+
+        return null;
     }
 
     /**
-     * @param baseUrl 地址
+     * @param baseUrl  地址
      * @param userName 用户名
      * @param password 密码
      * @return json字符串，登陆失败，则返回空''

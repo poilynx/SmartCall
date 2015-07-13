@@ -59,11 +59,11 @@ public class LoadImageTask extends BaseImageAsyncTask {
             bitmap = ZHttp.getBitmap(url, width, height);
 
             if (bitmap != null && bitmap.getByteCount() > 0)
-                ZIO.saveBitmapToCache(bitmap, cachedUrl);
+                ZImage.getInstance().saveToLocal(bitmap, url, cachedUrl);
         }
 
         handler.sendEmptyMessage(MSG_IMAGE_LOAD_DONE);
-        ImageTaskManager.getInstance().Done();
+        ImageTaskManager.getInstance().Done(LOAD_IMAGE_TASK_ID);
     }
 
     @Override

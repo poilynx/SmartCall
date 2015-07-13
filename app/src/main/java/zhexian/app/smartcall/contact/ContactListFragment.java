@@ -33,6 +33,7 @@ import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseActivity;
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.image.ImageTaskManager;
+import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.lib.ZContact;
 import zhexian.app.smartcall.tools.Format;
 import zhexian.app.smartcall.tools.Utils;
@@ -42,7 +43,6 @@ import zhexian.app.smartcall.ui.NotifyBar;
 
 public class ContactListFragment extends Fragment implements LetterSideBar.OnLetterChangedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final int REFRESH_PROCESS_IMAGE_DURATION = 100;
-    private static final int MIN_TO_SHOW_TASK_BAR = 20;
     private static final int MESSAGE_REFRESH_COUNT = 1;
     private static final int MESSAGE_DONE = 2;
 
@@ -120,8 +120,8 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
             }
         });
 
-        if (!baseApp.isLoadMostAvatars())
-            showImageProcessBar();
+
+        showImageProcessBar();
     }
 
     @Override
@@ -212,6 +212,9 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         if (!baseApp.isNetworkWifi())
             return;
 
+        if (baseApp.isLoadMostAvatars())
+            return;
+
         isLoadingImage = true;
 
         final Handler handler = new Handler() {
@@ -294,27 +297,6 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-    int getNotIncludeCount(List<ContactEntity> newList, List<ContactEntity> oldList) {
-        int addAmount = 0;
-
-        for (ContactEntity nEntity : newList) {
-            String phone = nEntity.getPhone();
-            if (phone.isEmpty())
-                continue;
-            boolean isFound = false;
-
-            for (ContactEntity oEntity : oldList) {
-                if (oEntity.getPhone().equals(phone)) {
-                    isFound = true;
-                    break;
-                }
-            }
-            if (!isFound)
-                addAmount++;
-        }
-        return addAmount;
-    }
-
     void showDialog() {
         isNeedToAddContact = false;
         if (ZContact.isPhoneExists(baseActivity, contactToAdd.getPhone()))
@@ -345,9 +327,43 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         dialog.show();
     }
 
+    /**
+     * 清理本地的头像图片，如果用户被删除、或者更新了新头像
+     *
+     * @param oldContactsList 老的用户列表
+     * @param newContactsList 新获取的用户列表
+     */
+    void cleanLocalAvatar(List<ContactEntity> oldContactsList, List<ContactEntity> newContactsList) {
+
+        for (ContactEntity oldContact : oldContactsList) {
+            String oldPhone = oldContact.getPhone();
+
+            if (oldPhone.isEmpty())
+                continue;
+
+            String oldAvatar = oldContact.getAvatarURL();
+
+            if (oldAvatar.isEmpty())
+                continue;
+
+            boolean isFound = false;
+
+            for (ContactEntity newContact : newContactsList) {
+                if (oldPhone.equals(newContact.getPhone())) {
+                    isFound = true;
+                    //用户是否修改了头像
+                    if (!oldAvatar.equals(newContact.getAvatarURL()))
+                        ZImage.getInstance().deleteFromLocal(oldAvatar);
+                }
+            }
+            //用户被删除了，则把本地图片也删除
+            if (!isFound)
+                ZImage.getInstance().deleteFromLocal(oldAvatar);
+        }
+    }
+
     class LoadContactTask extends AsyncTask<Void, Void, Boolean> {
-        int addAmount = 0;
-        int deleteAmount = 0;
+        boolean isContactChanged;
 
         @Override
         protected void onPreExecute() {
@@ -366,8 +382,8 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 return false;
 
             List<ContactEntity> temp = Dal.getList(baseApp);
-            addAmount = getNotIncludeCount(temp, mTotalContacts);
-            deleteAmount = getNotIncludeCount(mTotalContacts, temp);
+            isContactChanged = temp.size() != mTotalContacts.size();
+            cleanLocalAvatar(mTotalContacts, temp);
 
             mTotalContacts = temp;
             mSearchContacts.clear();
@@ -385,25 +401,11 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
 
             if (aBoolean) {
                 contactAdapter.notifyDataSetChanged();
-                String alertStr = "更新成功";
-
-                if (addAmount == 0 && deleteAmount == 0) {
-                    alertStr += "，没啥变化";
-                    baseActivity.notify.show(alertStr, NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
-                } else {
-                    if (addAmount > 0)
-                        alertStr += String.format(",新来了%d人", addAmount);
-
-                    if (deleteAmount > 0)
-                        alertStr += String.format(",离开了%d人", deleteAmount);
-
-                    letterSideBar.invalidate();
-                    mSearchText.setText("");
-                    baseActivity.notify.show(alertStr, NotifyBar.DURATION_MIDDLE, NotifyBar.IconType.Success);
-
-                    if (addAmount > MIN_TO_SHOW_TASK_BAR)
-                        showImageProcessBar();
-                }
+                letterSideBar.invalidate();
+                mSearchText.setText("");
+                String alertStr = isContactChanged ? "更新成功，数据已是最新" : "更新成功，没啥变化";
+                baseActivity.notify.show(alertStr, NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
+                showImageProcessBar();
             } else {
                 Utils.toast(baseApp, R.string.alert_refresh_failed);
                 baseApp.setIsLogin(false);
