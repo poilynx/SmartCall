@@ -54,7 +54,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@color/white"
-            android:hint="支持拼音、简拼、汉字搜索姓名"
+            android:hint="全拼、简拼、汉字搜索姓名、手机号"
             android:textColor="@color/gray_dark"
             android:textColorHint="@color/gray_light" />
 
