@@ -52,7 +52,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="点击拨号"
+            android:text="点击查看详情"
             android:textColor="@color/black_light"
             android:textSize="30sp" />
     </LinearLayout>
@@ -72,7 +72,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="长按查看详情"
+            android:text="长按拨号"
             android:textColor="@color/black_light"
             android:textSize="30sp" />
     </LinearLayout>

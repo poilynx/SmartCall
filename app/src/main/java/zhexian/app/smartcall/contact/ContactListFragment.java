@@ -363,7 +363,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
     }
 
     class LoadContactTask extends AsyncTask<Void, Void, Boolean> {
-        boolean isContactChanged;
+
 
         @Override
         protected void onPreExecute() {
@@ -382,7 +382,6 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 return false;
 
             List<ContactEntity> temp = Dal.getList(baseApp);
-            isContactChanged = temp.size() != mTotalContacts.size();
             cleanLocalAvatar(mTotalContacts, temp);
 
             mTotalContacts = temp;
@@ -403,8 +402,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 contactAdapter.notifyDataSetChanged();
                 letterSideBar.invalidate();
                 mSearchText.setText("");
-                String alertStr = isContactChanged ? "更新成功，数据已是最新" : "更新成功，没啥变化";
-                baseActivity.notify.show(alertStr, NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
+                baseActivity.notify.show("更新成功", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
                 showImageProcessBar();
             } else {
                 Utils.toast(baseApp, R.string.alert_refresh_failed);

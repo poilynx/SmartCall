@@ -135,6 +135,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:text="默认拨打短号"
+                    android:textColor="@color/blue_light"
                     android:textSize="18sp" />
 
                 <CheckBox
