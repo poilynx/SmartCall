@@ -116,7 +116,17 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View v) {
                     ContactEntity entity = mDataList.get(getPosition());
-                    ContactDetailActivity.actionStart(mBaseActivity, entity);
+                    String number = GetCallNumber(mBaseApp.getIsCallShort(), entity.getPhone(), entity.getShortPhone());
+                    if (number.isEmpty()) {
+                        if (mContactListFragment.isLoadingImage)
+                            Utils.toast(mBaseActivity, R.string.alert_empty_number);
+                        else
+                            mBaseActivity.notify.show(R.string.alert_empty_number, NotifyBar.DURATION_SHORT, NotifyBar.IconType.Error);
+                        return;
+                    }
+                    DoAction.Call(mBaseActivity, number);
+                    mContactListFragment.isNeedToAddContact = true;
+                    mContactListFragment.contactToAdd = entity;
                 }
             });
 
@@ -124,19 +134,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public boolean onLongClick(View v) {
                     ContactEntity entity = mDataList.get(getPosition());
-                    String number = GetCallNumber(mBaseApp.getIsCallShort(), entity.getPhone(), entity.getShortPhone());
-                    if (number.isEmpty()) {
-                        if (mContactListFragment.isLoadingImage)
-                            Utils.toast(mBaseActivity, R.string.alert_empty_number);
-                        else
-                            mBaseActivity.notify.show(R.string.alert_empty_number, NotifyBar.DURATION_SHORT, NotifyBar.IconType.Error);
-                        return true;
-                    }
-
-                    DoAction.Call(mBaseActivity, number);
-                    mContactListFragment.isNeedToAddContact = true;
-                    mContactListFragment.contactToAdd = entity;
-
+                    ContactDetailActivity.actionStart(mBaseActivity, entity);
                     return true;
                 }
             });

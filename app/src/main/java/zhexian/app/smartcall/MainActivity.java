@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -59,11 +58,6 @@ public class MainActivity extends BaseActivity {
             return;
         }
         setContentView(R.layout.activity_main);
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-        baseApp.setScreenWidth(dm.widthPixels);
-        baseApp.setScreenHeight(dm.heightPixels);
-
         bindIntroduce();
     }
 

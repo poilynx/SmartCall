@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 
+import java.util.Date;
+
 import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.lib.ZHttp;
 import zhexian.app.smartcall.lib.ZIO;
@@ -17,19 +19,19 @@ public class BaseApplication extends Application {
     private static final String PARAM_IS_LOGIN = "zhexian.app.smartcall.base.PARAM_IS_LOGIN";
     private static final String PARAM_IS_LOAD_MOST_AVATARS = "zhexian.app.smartcall.base.PARAM_IS_LOAD_MOST_AVATARS";
     private static final String PARAM_IS_READ_INTRODUCE = "zhexian.app.smartcall.base.PARAM_IS_READ_INTRODUCE";
+    private static final String PARAM_LAST_MODIFY_TIME = "zhexian.app.smartcall.base.PARAM_LAST_MODIFY_TIME";
+
     private SharedPreferences mSp;
     private boolean mIsCallShort;
     private boolean mIsLoadMostAvatars;
     private boolean mIsReadIntroduce;
+    private long mLastModifyTime;
     private String mServiceUrl;
     private String mUserName;
     private String mPassword;
     private boolean mIsLogin;
     private String mFilePath;
     private ZHttp.NetworkStatus mNetWorkStatus;
-    private int screenWidth;
-    private int screenHeight;
-
 
     @Override
     public void onCreate() {
@@ -38,10 +40,11 @@ public class BaseApplication extends Application {
         mServiceUrl = mSp.getString(PARAM_SERVICE_URL, getString(R.string.service_url));
         mUserName = mSp.getString(PARAM_USER_NAME, "chenjunjie");
         mPassword = mSp.getString(PARAM_PASSWORD, "");
-        mIsCallShort = mSp.getBoolean(PARAM_CALL_SHORT, false);
+        mIsCallShort = mSp.getBoolean(PARAM_CALL_SHORT, true);
         mIsLogin = mSp.getBoolean(PARAM_IS_LOGIN, false);
         mIsLoadMostAvatars = mSp.getBoolean(PARAM_IS_LOAD_MOST_AVATARS, false);
         mIsReadIntroduce = mSp.getBoolean(PARAM_IS_READ_INTRODUCE, false);
+        mLastModifyTime = mSp.getLong(PARAM_LAST_MODIFY_TIME, new Date().getTime());
         mFilePath = Environment.isExternalStorageEmulated() ? getExternalFilesDir(null).getAbsolutePath() : getFilesDir().getAbsolutePath();
         mFilePath += "/";
         mNetWorkStatus = ZHttp.GetConnectType(this);
@@ -76,22 +79,6 @@ public class BaseApplication extends Application {
 
     public boolean isNetworkWifi() {
         return mNetWorkStatus == ZHttp.NetworkStatus.Wifi;
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
-    }
-
-    public void setScreenHeight(int screenHeight) {
-        this.screenHeight = screenHeight;
-    }
-
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public void setScreenWidth(int screenWidth) {
-        this.screenWidth = screenWidth;
     }
 
     public String getFilePath() {
@@ -181,5 +168,17 @@ public class BaseApplication extends Application {
 
         mIsReadIntroduce = isReadIntroduce;
         mSp.edit().putBoolean(PARAM_IS_READ_INTRODUCE, mIsReadIntroduce).apply();
+    }
+
+    public long getLastModifyTime() {
+        return mLastModifyTime;
+    }
+
+    public void setLastModifyTime(long lastModifyTime) {
+        if (mLastModifyTime == lastModifyTime)
+            return;
+
+        mLastModifyTime = lastModifyTime;
+        mSp.edit().putLong(PARAM_LAST_MODIFY_TIME, mLastModifyTime).apply();
     }
 }

@@ -134,7 +134,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
-                    android:text="默认拨打短号"
+                    android:text="优先拨打短号"
                     android:textColor="@color/blue_light"
                     android:textSize="18sp" />
 
@@ -157,7 +157,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="登陆"
+                android:text="登录"
                 android:textColor="@color/white"
                 android:textSize="19sp" />
         </FrameLayout>

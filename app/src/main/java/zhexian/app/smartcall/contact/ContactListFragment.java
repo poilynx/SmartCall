@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -45,7 +46,12 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
     private static final int REFRESH_PROCESS_IMAGE_DURATION = 100;
     private static final int MESSAGE_REFRESH_COUNT = 1;
     private static final int MESSAGE_DONE = 2;
-
+    private static final int TRIGGER_AUTO_REFRESH = 0;
+    private static final int TRIGGER_HAND_REFRESH = 1;
+    /**
+     * wifi下自动更新，最低间隔为1小时，单位毫秒
+     */
+    private static final long REFRESH_CONTACTS_MIN_DURATION = 3600000;
     public boolean isLoadingImage;
     public boolean isNeedToAddContact;
     public BaseActivity baseActivity;
@@ -119,9 +125,11 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 contactAdapter.notifyDataSetChanged();
             }
         });
-
-
         showImageProcessBar();
+        boolean isNeedRefreshContacts = baseApp.isNetworkWifi() && new Date().getTime() - baseApp.getLastModifyTime() >= REFRESH_CONTACTS_MIN_DURATION;
+
+        if (isNeedRefreshContacts && !isRequestData && !isLoadingImage)
+            new LoadContactTask().execute(TRIGGER_AUTO_REFRESH);
     }
 
     @Override
@@ -146,7 +154,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         }
 
         if (!isRequestData)
-            new LoadContactTask().execute();
+            new LoadContactTask().execute(TRIGGER_HAND_REFRESH);
     }
 
     void searchContacts() {
@@ -362,8 +370,8 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         }
     }
 
-    class LoadContactTask extends AsyncTask<Void, Void, Boolean> {
-
+    class LoadContactTask extends AsyncTask<Integer, Void, Boolean> {
+        int taskType = 0;
 
         @Override
         protected void onPreExecute() {
@@ -373,7 +381,8 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
 
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Boolean doInBackground(Integer... params) {
+            taskType = params[0];
             String result = Dal.readFromHttp(baseApp.getServiceUrl(), baseApp.getUserName(), baseApp.getPassword());
             if (result == null || result.isEmpty())
                 return false;
@@ -402,8 +411,13 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 contactAdapter.notifyDataSetChanged();
                 letterSideBar.invalidate();
                 mSearchText.setText("");
-                baseActivity.notify.show("更新成功", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
-                showImageProcessBar();
+
+                if (taskType == TRIGGER_HAND_REFRESH) {
+                    baseActivity.notify.show("更新成功:)", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
+                    showImageProcessBar();
+                }
+
+                baseApp.setLastModifyTime(new Date().getTime());
             } else {
                 Utils.toast(baseApp, R.string.alert_refresh_failed);
                 baseApp.setIsLogin(false);
