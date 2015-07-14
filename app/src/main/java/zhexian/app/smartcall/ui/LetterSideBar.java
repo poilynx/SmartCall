@@ -28,6 +28,7 @@ public class LetterSideBar extends View {
     private char currentGroupChar = '.';
     private Canvas mCanvas;
     private int mControlHalfWidth;
+    private int controlWidth;
 
     public LetterSideBar(Context context) {
         super(context);
@@ -50,17 +51,22 @@ public class LetterSideBar extends View {
         layoutParams.height = contentHeight;
         setLayoutParams(layoutParams);
         _colorAnimation = Utils.GenerateColorAnimator(getContext(), R.animator.letter_side_bar_bg_color, this);
-        mCanvas = new Canvas();
-        int controlWidth = getResources().getDimensionPixelOffset(R.dimen.letter_side_bar_width);
-        mControlHalfWidth = controlWidth / 2;
-        letterBitmap = Bitmap.createBitmap(controlWidth, contentHeight,
-                Bitmap.Config.ARGB_8888);
-        mCanvas.setBitmap(letterBitmap);
 
+        controlWidth = getResources().getDimensionPixelOffset(R.dimen.letter_side_bar_width);
+        mControlHalfWidth = controlWidth / 2;
+
+        Update();
         paint = new Paint();
         paint.setTextSize(itemSize);
         paint.setColor(getResources().getColor(R.color.gray_lighter));
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+    }
+
+    public void Update() {
+        letterBitmap = Bitmap.createBitmap(controlWidth, contentHeight,
+                Bitmap.Config.ARGB_8888);
+        mCanvas = new Canvas();
+        mCanvas.setBitmap(letterBitmap);
     }
 
     @Override
@@ -69,7 +75,6 @@ public class LetterSideBar extends View {
             return;
         }
         letterSize = letters.size();
-
         for (int i = 0; i < letterSize; i++) {
             String letter = String.valueOf(letters.get(i));
             mCanvas.drawText(letter, mControlHalfWidth - paint.measureText(letter) / 2,

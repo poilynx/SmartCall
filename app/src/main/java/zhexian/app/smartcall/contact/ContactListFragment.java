@@ -409,7 +409,9 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
 
             if (aBoolean) {
                 contactAdapter.notifyDataSetChanged();
+                letterSideBar.Update();
                 letterSideBar.invalidate();
+
                 mSearchText.setText("");
 
                 if (taskType == TRIGGER_HAND_REFRESH) {
