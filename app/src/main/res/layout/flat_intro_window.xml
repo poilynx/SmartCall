@@ -67,7 +67,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="查看详情"
+            android:text="看详情"
             android:textColor="@color/black_light"
             android:textSize="30sp" />
     </LinearLayout>

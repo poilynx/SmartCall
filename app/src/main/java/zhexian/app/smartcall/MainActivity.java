@@ -62,32 +62,34 @@ public class MainActivity extends BaseActivity {
     }
 
     void bindIntroduce() {
-        if (!baseApp.isReadIntroduce()) {
-            final View introView = View.inflate(this, R.layout.flat_intro_window, null);
-            final FrameLayout linearLayout = (FrameLayout) findViewById(R.id.contact_main_container);
-            linearLayout.addView(introView);
-            Utils.GenerateColorAnimator(this, R.animator.intro_window_bg, introView).start();
-            mConfirmText = (TextView) findViewById(R.id.intro_confirm_text);
-            confirmBtn = findViewById(R.id.intro_confirm_btn);
+        if (baseApp.isReadIntroduce())
+            return;
 
-            confirmBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    linearLayout.removeView(introView);
-                    baseApp.setIsReadIntroduce(true);
-                }
-            });
-            confirmBtn.setEnabled(false);
+        final View introView = View.inflate(this, R.layout.flat_intro_window, null);
+        final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.contact_main_container);
+        frameLayout.addView(introView);
+        Utils.GenerateColorAnimator(this, R.animator.intro_window_bg, introView).start();
+        mConfirmText = (TextView) findViewById(R.id.intro_confirm_text);
+        confirmBtn = findViewById(R.id.intro_confirm_btn);
 
-            introConfirmBtnEnableTimer = new Timer();
-            TimerTask timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    handler.sendEmptyMessage(MSG_BTN_ENABLE_TICK);
-                }
-            };
-            introConfirmBtnEnableTimer.schedule(timerTask, 0, 1000);
-        }
+        confirmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                frameLayout.removeView(introView);
+                baseApp.setIsReadIntroduce(true);
+            }
+        });
+        confirmBtn.setEnabled(false);
+
+        introConfirmBtnEnableTimer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(MSG_BTN_ENABLE_TICK);
+            }
+        };
+        introConfirmBtnEnableTimer.schedule(timerTask, 0, 1000);
+
     }
 
     public void JumpToLogin() {
