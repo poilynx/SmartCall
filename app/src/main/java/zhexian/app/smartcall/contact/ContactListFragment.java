@@ -413,7 +413,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 mSearchText.setText("");
 
                 if (taskType == TRIGGER_HAND_REFRESH) {
-                    baseActivity.notify.show("更新成功:)", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
+                    baseActivity.notify.show("更新成功：）", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
                     showImageProcessBar();
                 }
 
