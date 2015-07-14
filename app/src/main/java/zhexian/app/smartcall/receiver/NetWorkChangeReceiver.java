@@ -8,7 +8,7 @@ import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.lib.ZHttp;
 
 /**
- * Created by kimmy on 2015/5/19.
+ *  网络信号监听类
  */
 public class NetWorkChangeReceiver extends BroadcastReceiver {
     private BaseApplication mBaseApplication;

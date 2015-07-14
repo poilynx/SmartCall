@@ -128,7 +128,7 @@ public class ZIO {
     public static String getDirSizeInfo(String url, String emptyDescription) {
 
         File file = new File(url);
-        if (file.exists() == false)
+        if (!file.exists())
             return emptyDescription;
 
         long size = getDirCapacity(file);
@@ -205,6 +205,8 @@ public class ZIO {
         } finally {
             try {
                 fos.close();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -32,7 +32,7 @@ public class ZString {
                     for (int j = 0; j < cBytes.length; j++) {
                         browserUrl.append('%');
                         browserUrl.append(HEX_STRING.charAt((cBytes[j] & 0xf0) >> 4));
-                        browserUrl.append(HEX_STRING.charAt((cBytes[j] & 0x0f) >> 0));
+                        browserUrl.append(HEX_STRING.charAt((cBytes[j] & 0x0f)));
                     }
                     tempStr = "";
                 }

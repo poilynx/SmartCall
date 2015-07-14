@@ -26,6 +26,8 @@ public class LetterSideBar extends View {
     private List<Character> letters;
     private OnLetterChangedListener listener;
     private char currentGroupChar = '.';
+    private Canvas mCanvas;
+    private int mControlHalfWidth;
 
     public LetterSideBar(Context context) {
         super(context);
@@ -48,6 +50,17 @@ public class LetterSideBar extends View {
         layoutParams.height = contentHeight;
         setLayoutParams(layoutParams);
         _colorAnimation = Utils.GenerateColorAnimator(getContext(), R.animator.letter_side_bar_bg_color, this);
+        mCanvas = new Canvas();
+        int controlWidth = getResources().getDimensionPixelOffset(R.dimen.letter_side_bar_width);
+        mControlHalfWidth = controlWidth / 2;
+        letterBitmap = Bitmap.createBitmap(controlWidth, contentHeight,
+                Bitmap.Config.ARGB_8888);
+        mCanvas.setBitmap(letterBitmap);
+
+        paint = new Paint();
+        paint.setTextSize(itemSize);
+        paint.setColor(getResources().getColor(R.color.gray_lighter));
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
     }
 
     @Override
@@ -57,25 +70,10 @@ public class LetterSideBar extends View {
         }
         letterSize = letters.size();
 
-        if (paint == null) {
-            paint = new Paint();
-            paint.setTextSize(itemSize);
-
-            paint.setColor(getResources().getColor(R.color.gray_lighter));
-            paint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        }
-
-        Canvas mCanvas = new Canvas();
-        letterBitmap = Bitmap.createBitmap(getMeasuredWidth(), contentHeight,
-                Bitmap.Config.ARGB_8888);
-        mCanvas.setBitmap(letterBitmap);
-        float widthCenter = getMeasuredWidth() / 2.0F;
-
         for (int i = 0; i < letterSize; i++) {
             String letter = String.valueOf(letters.get(i));
-            mCanvas.drawText(letter, widthCenter - paint.measureText(letter) / 2,
+            mCanvas.drawText(letter, mControlHalfWidth - paint.measureText(letter) / 2,
                     itemHeight * i + itemHeight, paint);
-
         }
         if (letterBitmap != null) {
             canvas.drawBitmap(letterBitmap, 0, 0, paint);
@@ -107,8 +105,6 @@ public class LetterSideBar extends View {
     }
 
     private void touchDown(int y) {
-
-
         int position = (y / itemHeight);
 
         if (position < 0 || position >= letterSize)

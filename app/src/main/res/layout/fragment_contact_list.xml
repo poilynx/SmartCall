@@ -23,7 +23,7 @@
 
         <zhexian.app.smartcall.ui.LetterSideBar
             android:id="@+id/contact_letter_side_bar"
-            android:layout_width="28dp"
+            android:layout_width="@dimen/letter_side_bar_width"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true" />

@@ -25,7 +25,9 @@ public class ZContact {
         ContentResolver resolver = context.getContentResolver();
         Cursor cursor = resolver.query(uri, new String[]{ContactsContract.Data.DISPLAY_NAME}, null, null, null);
 
-        return cursor.moveToFirst();
+        boolean isExist = cursor.moveToFirst();
+        cursor.close();
+        return isExist;
     }
 
     public static void Add(Activity activity, ContactEntity entity) {

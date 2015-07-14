@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by kimmy on 2015/6/16.
+ * 文本格式化工具类
  */
 public class Format {
 

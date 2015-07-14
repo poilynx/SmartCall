@@ -50,6 +50,7 @@ public class ContactSQLHelper {
         entity.setName(cursor.getString(0));
         entity.setJob(cursor.getString(1));
         entity.setAvatarUrl(cursor.getString(2));
+        cursor.close();
         return entity;
     }
 
@@ -60,6 +61,7 @@ public class ContactSQLHelper {
         while (cursor.moveToNext()) {
             sb.append(String.format("%s;", cursor.getString(0)));
         }
+        cursor.close();
         return sb.toString();
     }
 
