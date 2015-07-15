@@ -33,7 +33,7 @@ public class IncomingCallBroadCastReceiver extends BroadcastReceiver {
         }
     }
 
-    void removeView(Context context) {
+    private void removeView(Context context) {
         if (addedView == null)
             return;
 

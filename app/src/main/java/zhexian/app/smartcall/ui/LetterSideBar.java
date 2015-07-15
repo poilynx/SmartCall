@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,19 +17,20 @@ import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.tools.Utils;
 
 public class LetterSideBar extends View {
-    int letterSize;
-    ObjectAnimator _colorAnimation;
+    private int letterSize;
     private int itemHeight;
-    private int itemSize;
     private int contentHeight;
+    private int mControlHalfWidth;
+    private int controlWidth;
+    private char currentGroupChar = '.';
+    private ObjectAnimator mColorAnimation;
     private Paint paint;
     private Bitmap letterBitmap;
     private List<Character> letters;
     private OnLetterChangedListener listener;
-    private char currentGroupChar = '.';
+
     private Canvas mCanvas;
-    private int mControlHalfWidth;
-    private int controlWidth;
+
 
     public LetterSideBar(Context context) {
         super(context);
@@ -44,13 +46,13 @@ public class LetterSideBar extends View {
 
     public void Init(List<Character> letters) {
         itemHeight = getResources().getDimensionPixelSize(R.dimen.navigator_text_height);
-        itemSize = getResources().getDimensionPixelSize(R.dimen.navigator_text_size);
+        int itemSize = getResources().getDimensionPixelSize(R.dimen.navigator_text_size);
         this.letters = letters;
         contentHeight = (int) ((letters.size() + 0.5) * itemHeight);
         ViewGroup.LayoutParams layoutParams = getLayoutParams();
         layoutParams.height = contentHeight;
         setLayoutParams(layoutParams);
-        _colorAnimation = Utils.GenerateColorAnimator(getContext(), R.animator.letter_side_bar_bg_color, this);
+        mColorAnimation = Utils.GenerateColorAnimator(getContext(), R.animator.letter_side_bar_bg_color, this);
 
         controlWidth = getResources().getDimensionPixelOffset(R.dimen.letter_side_bar_width);
         mControlHalfWidth = controlWidth / 2;
@@ -87,7 +89,7 @@ public class LetterSideBar extends View {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
+    public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
         int actionName = event.getAction();
 
         if (actionName == MotionEvent.ACTION_DOWN || actionName == MotionEvent.ACTION_MOVE) {
@@ -95,14 +97,14 @@ public class LetterSideBar extends View {
             touchDown((int) event.getY());
 
             if (actionName == MotionEvent.ACTION_DOWN)
-                _colorAnimation.start();
+                mColorAnimation.start();
 
             return true;
         }
 
         if (actionName == MotionEvent.ACTION_UP) {
             listener.OnTouchUp();
-            _colorAnimation.reverse();
+            mColorAnimation.reverse();
             return true;
         }
 

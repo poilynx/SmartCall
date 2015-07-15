@@ -118,9 +118,8 @@ public class ContactEntity implements Comparable<ContactEntity>, Serializable {
         return userNameHeadPY.charAt(0);
     }
 
-    @NonNull
     @Override
-    public int compareTo(ContactEntity contactEntity) {
+    public int compareTo(@NonNull ContactEntity contactEntity) {
         char firstChar = this.getUserNameStartPY();
         char compareChar = contactEntity.getUserNameStartPY();
 

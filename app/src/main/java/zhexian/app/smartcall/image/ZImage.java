@@ -1,6 +1,8 @@
 package zhexian.app.smartcall.image;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -10,34 +12,31 @@ import android.widget.ImageView;
 import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
-import zhexian.app.smartcall.image.LoadImageTask.ILoadImageCallBack;
 import zhexian.app.smartcall.lib.ZIO;
 import zhexian.app.smartcall.lib.ZString;
 import zhexian.app.smartcall.tools.Utils;
 
-public class ZImage implements ILoadImageCallBack {
+public class ZImage {
 
     /**
      * 内存最大单张200KB
      */
     private static final int MAX_CACHED_IMAGE_SIZE = 200 * 1024;
 
-
-    /**
-     * 内存缓存最大容量20M
-     */
-    private static final int CACHED_MEMORY_SIZE = 20 * 1024 * 1024;
     private static ZImage mZImage;
-    LruCache<String, Bitmap> mMemoryCache;
+    private LruCache<String, Bitmap> mMemoryCache;
 
     private BaseApplication mApp;
     private Bitmap placeHolderBitmap;
 
-    public ZImage(Activity activity) {
+    private ZImage(Activity activity) {
         mApp = (BaseApplication) activity.getApplication();
         placeHolderBitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.user_default);
+        ActivityManager activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
 
-        mMemoryCache = new LruCache<String, Bitmap>(CACHED_MEMORY_SIZE) {
+        //申请总内存的1/8来创建图片内存池，在3G内存上，约为32MB
+        int memorySize = activityManager.getMemoryClass() * 1024 * 1024 / 8;
+        mMemoryCache = new LruCache<String, Bitmap>(memorySize) {
             protected int sizeOf(String key, Bitmap bitmap) {
                 return bitmap.getByteCount();
             }
@@ -60,7 +59,7 @@ public class ZImage implements ILoadImageCallBack {
         return mZImage;
     }
 
-    public void loadEmpty(ImageView imageView) {
+    private void loadEmpty(ImageView imageView) {
         imageView.setImageBitmap(placeHolderBitmap);
     }
 
@@ -96,7 +95,7 @@ public class ZImage implements ILoadImageCallBack {
         if (!canQueryHttp)
             return;
 
-        ImageTaskManager.getInstance().addTask(new LoadImageTask(mApp, imageView, url, width, height, isCache, this));
+        ImageTaskManager.getInstance().addTask(new LoadImageTask(mApp, imageView, url, width, height, isCache), ImageTaskManager.WorkType.LIFO);
     }
 
     public Bitmap getBitMap(String url) {
@@ -123,7 +122,7 @@ public class ZImage implements ILoadImageCallBack {
     }
 
     public void deleteFromLocal(String httpUrl) {
-
+        mMemoryCache.remove(httpUrl);
         String cachedUrl = ZString.getFileCachedDir(httpUrl, mApp.getFilePath());
         ZIO.deleteFile(cachedUrl);
         ContactSQLHelper.getInstance().deleteFilePath(httpUrl);
@@ -131,7 +130,11 @@ public class ZImage implements ILoadImageCallBack {
 
     public void saveToLocal(Bitmap bitmap, String httpUrl, String cachedUrl) {
         ZIO.saveBitmapToCache(bitmap, cachedUrl);
-        ContactSQLHelper.getInstance().addFilePath(httpUrl);
+        ContactSQLHelper.getInstance().addFilePath(httpUrl, cachedUrl);
+    }
+
+    public void reloadMemory() {
+        ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(), ImageTaskManager.WorkType.LILO);
     }
 
     Bitmap getFromMemoryCache(String url) {
@@ -143,15 +146,4 @@ public class ZImage implements ILoadImageCallBack {
             mMemoryCache.put(url, bitmap);
     }
 
-    @Override
-    public void onDone(String url, ImageView imageView, Bitmap bitmap, boolean isCache) {
-        String originalUrl = (String) imageView.getTag();
-
-        if (originalUrl != null && originalUrl.equals(url)) {
-            imageView.setImageBitmap(bitmap);
-
-            if (isCache && getFromMemoryCache(url) == null)
-                putToMemoryCache(url, bitmap);
-        }
-    }
 }

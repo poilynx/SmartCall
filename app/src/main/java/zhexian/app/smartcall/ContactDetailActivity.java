@@ -23,7 +23,6 @@ public class ContactDetailActivity extends BaseActivity implements View.OnClickL
     private static final String PARAM_CONTACT_ENTITY = "zhexian.app.smartcall.contact.PARAM_CONTACT_ENTITY";
     private ContactEntity mEntity;
     private ClipboardManager clip;
-    private View mBackBtn;
 
     private ImageView mUserAvatar;
     private TextView mUserName;
@@ -66,7 +65,7 @@ public class ContactDetailActivity extends BaseActivity implements View.OnClickL
         clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         setContentView(R.layout.activity_contact_detail);
         baseApp = (BaseApplication) getApplication();
-        mBackBtn = findViewById(R.id.detail_back);
+        View mBackBtn = findViewById(R.id.detail_back);
         mUserAvatar = (ImageView) findViewById(R.id.detail_avatar);
         mUserName = (TextView) findViewById(R.id.detail_user_name);
         mJobTitle = (TextView) findViewById(R.id.detail_job);
@@ -120,12 +119,12 @@ public class ContactDetailActivity extends BaseActivity implements View.OnClickL
         }
     }
 
-    void callNumber(String number) {
+    private void callNumber(String number) {
         DoAction.Call(this, number);
         isNeedToAdd = true;
     }
 
-    void showDialog() {
+    private void showDialog() {
         isNeedToAdd = false;
 
         if (ZContact.isPhoneExists(this, mEntity.getPhone()))
@@ -151,7 +150,7 @@ public class ContactDetailActivity extends BaseActivity implements View.OnClickL
         dialog.show();
     }
 
-    void bindData() {
+    private void bindData() {
         if (mEntity == null)
             return;
 
@@ -187,14 +186,14 @@ public class ContactDetailActivity extends BaseActivity implements View.OnClickL
             setContactAdded();
     }
 
-    void setContactAdded() {
+    private void setContactAdded() {
         mLocalContactContainer.setEnabled(false);
         mLocalContactIcon.setImageResource(R.drawable.contact_added);
         mLocalContactText.setTextColor(getResources().getColor(R.color.gray));
         mLocalContactText.setText("已添加");
     }
 
-    void addToLocalContacts() {
+    private void addToLocalContacts() {
         ZContact.Add(this, mEntity);
         setContactAdded();
         notify.show(R.string.notify_add_contact_success, NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);

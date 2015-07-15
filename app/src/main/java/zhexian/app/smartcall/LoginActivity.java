@@ -19,16 +19,16 @@ import zhexian.app.smartcall.ui.NotifyBar;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
-    EditText mService;
-    EditText mUserName;
-    EditText mPassword;
-    CheckBox mIsCallShort;
-    View mSubmit;
+    private EditText mService;
+    private EditText mUserName;
+    private EditText mPassword;
+    private CheckBox mIsCallShort;
+    private View mSubmit;
 
-    String serviceStr;
-    String userNameStr;
-    String passwordStr;
-    boolean isSubmitEnabled = true;
+    private String serviceStr;
+    private String userNameStr;
+    private String passwordStr;
+    private boolean isSubmitEnabled = true;
 
     public static void actionStart(Activity context) {
         Intent intent = new Intent(context, LoginActivity.class);
@@ -155,7 +155,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         });
     }
 
-    class LoginTask extends AsyncTask<Void, Void, Boolean> {
+    private class LoginTask extends AsyncTask<Void, Void, Boolean> {
 
         @Override
         protected void onPreExecute() {

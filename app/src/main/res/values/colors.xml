@@ -12,7 +12,6 @@
 
     <color name="blue_light">#42b3f3</color>
     <color name="blue">#0078d8</color>
-    <color name="blue_light_alpha">#1042b3f3</color>
     <color name="black_light">#2e2e2e</color>
     <color name="black_alpha">#90000000</color>
 </resources>

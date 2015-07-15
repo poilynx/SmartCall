@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,19 +50,19 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
     private static final int TRIGGER_AUTO_REFRESH = 0;
     private static final int TRIGGER_HAND_REFRESH = 1;
     /**
-     * wifi下自动更新，最低间隔为1小时，单位毫秒
+     * wifi下自动更新，最低间隔为1天，单位毫秒
      */
-    private static final long REFRESH_CONTACTS_MIN_DURATION = 3600000;
+    private static final long REFRESH_CONTACTS_MIN_DURATION = 86400000;
     public boolean isLoadingImage;
     public boolean isNeedToAddContact;
-    public BaseActivity baseActivity;
-    public BaseApplication baseApp;
+    public BaseActivity mBaseActivity;
     public ContactEntity contactToAdd;
+
+    private BaseApplication mBaseApp;
     private InputMethodManager imm;
     private boolean isRequestData;
     private int previousIndex = 0;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private RecyclerView recyclerView;
     private ContactAdapter contactAdapter;
     private LinearLayoutManager mLinearLayoutManager;
     private List<ContactEntity> mTotalContacts;
@@ -71,21 +72,20 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
     private LetterSideBar letterSideBar;
     private TextView mTextViewChar;
     private EditText mSearchText;
-    private ImageView mKeyboardBtn;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_contact_list, container, false);
-        baseActivity = (BaseActivity) getActivity();
-        baseApp = baseActivity.baseApp;
+        mBaseActivity = (BaseActivity) getActivity();
+        mBaseApp = mBaseActivity.baseApp;
         imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         mIndexMap = new HashMap<>();
         mLetterList = new ArrayList<>();
         letterSideBar = ((LetterSideBar) view.findViewById(R.id.contact_letter_side_bar));
         letterSideBar.setOnLetterChangedListener(this);
 
-        mTotalContacts = Dal.getList(baseApp);
+        mTotalContacts = Dal.getList(mBaseApp);
         mSearchContacts = new ArrayList<>(mTotalContacts);
         generateIndexMap(mTotalContacts);
         letterSideBar.Init(mLetterList);
@@ -99,12 +99,12 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
         mSwipeRefreshLayout.setOnRefreshListener(this);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView = (RecyclerView) view.findViewById(R.id.contact_list);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.contact_list);
         recyclerView.setLayoutManager(mLinearLayoutManager);
         contactAdapter = new ContactAdapter(this, mSearchContacts);
         recyclerView.setAdapter(contactAdapter);
         mTextViewChar = (TextView) view.findViewById(R.id.contact_group_char);
-        mKeyboardBtn = (ImageView) view.findViewById(R.id.bar_keyboard_btn);
+        ImageView mKeyboardBtn = (ImageView) view.findViewById(R.id.bar_keyboard_btn);
         mKeyboardBtn.setOnClickListener(this);
         mSearchText = (EditText) view.findViewById(R.id.bar_keyboard_text);
 
@@ -126,10 +126,12 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
             }
         });
         showImageProcessBar();
-        boolean isNeedRefreshContacts = baseApp.isNetworkWifi() && new Date().getTime() - baseApp.getLastModifyTime() >= REFRESH_CONTACTS_MIN_DURATION;
+        boolean isNeedRefreshContacts = mBaseApp.isNetworkWifi() && new Date().getTime() - mBaseApp.getLastModifyTime() >= REFRESH_CONTACTS_MIN_DURATION;
 
         if (isNeedRefreshContacts && !isRequestData && !isLoadingImage)
             new LoadContactTask().execute(TRIGGER_AUTO_REFRESH);
+        else
+            ZImage.getInstance().reloadMemory();
     }
 
     @Override
@@ -137,14 +139,14 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         super.onResume();
 
         if (isNeedToAddContact)
-            showDialog();
+            showAddContactDialog();
     }
 
     @Override
     public void onRefresh() {
-        if (!baseApp.isNetworkAvailable()) {
+        if (!mBaseApp.isNetworkAvailable()) {
             mSwipeRefreshLayout.setRefreshing(false);
-            Utils.toast(baseApp, R.string.alert_network_not_available);
+            Utils.toast(mBaseApp, R.string.alert_network_not_available);
             return;
         }
 
@@ -157,7 +159,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
             new LoadContactTask().execute(TRIGGER_HAND_REFRESH);
     }
 
-    void searchContacts() {
+    private void searchContacts() {
         String searchText = mSearchText.getText().toString().toLowerCase();
         mSearchContacts.clear();
 
@@ -187,7 +189,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         }
     }
 
-    void generateIndexMap(List<ContactEntity> dataList) {
+    private void generateIndexMap(List<ContactEntity> dataList) {
         if (dataList == null || dataList.size() == 0)
             return;
 
@@ -206,7 +208,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         }
     }
 
-    public int getGroupPos(char groupChar) {
+    private int getGroupPos(char groupChar) {
         if (mIndexMap == null || mIndexMap.size() == 0)
             return -1;
 
@@ -216,45 +218,33 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         return -1;
     }
 
-    void showImageProcessBar() {
-        if (!baseApp.isNetworkWifi())
+
+    private void showImageProcessBar() {
+        if (!mBaseApp.isNetworkWifi())
             return;
 
-        if (baseApp.isLoadMostAvatars())
+        if (mBaseApp.isLoadMostAvatars())
             return;
 
         isLoadingImage = true;
 
-        final Handler handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-
-                if (msg.what == MESSAGE_REFRESH_COUNT) {
-                    baseActivity.notify.show(String.format("正在玩命加载头像，剩余%d", msg.arg1), NotifyBar.IconType.Progress);
-                } else if (msg.what == MESSAGE_DONE) {
-                    baseApp.setIsLoadMostAvatars(true);
-                    baseActivity.notify.show("已全部加载完毕：）", NotifyBar.IconType.Success);
-                    baseActivity.notify.hide(2000);
-                }
-            }
-        };
-
+        final NotifyHandler mNotifyHandler = new NotifyHandler(mBaseActivity);
         final Timer timer = new Timer();
         final TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                int size = ImageTaskManager.getInstance().getLeftTaskCount();
+                int size = ImageTaskManager.getInstance().getLeftSaveTaskCount();
 
                 if (size <= 0) {
                     isLoadingImage = false;
-                    handler.sendEmptyMessage(MESSAGE_DONE);
+                    mNotifyHandler.sendEmptyMessage(MESSAGE_DONE);
                     timer.cancel();
                     return;
                 }
                 Message message = new Message();
                 message.what = MESSAGE_REFRESH_COUNT;
                 message.arg1 = size;
-                handler.sendMessage(message);
+                mNotifyHandler.sendMessage(message);
             }
         };
         timer.schedule(timerTask, 0, REFRESH_PROCESS_IMAGE_DURATION);
@@ -300,29 +290,28 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         }
     }
 
-
-    void changeInputState() {
+    private void changeInputState() {
         imm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
-    void showDialog() {
+    private void showAddContactDialog() {
         isNeedToAddContact = false;
-        if (ZContact.isPhoneExists(baseActivity, contactToAdd.getPhone()))
+        if (ZContact.isPhoneExists(mBaseActivity, contactToAdd.getPhone()))
             return;
 
-        AlertDialog dialog = new AlertDialog.Builder(baseActivity)
+        AlertDialog dialog = new AlertDialog.Builder(mBaseActivity)
                 .setTitle("添加到通讯录")
                 .setMessage(String.format("将%s的信息导入本地通讯录？ ", contactToAdd.getUserName()))
                 .setPositiveButton("添加", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ZContact.Add(baseActivity, contactToAdd);
+                        ZContact.Add(mBaseActivity, contactToAdd);
                         dialog.dismiss();
                         contactToAdd = null;
                         if (isLoadingImage)
-                            Utils.toast(baseActivity, "添加成功");
+                            Utils.toast(mBaseActivity, "添加成功");
                         else
-                            baseActivity.notify.show("添加成功", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
+                            mBaseActivity.notify.show("添加成功", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
                     }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
@@ -341,7 +330,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
      * @param oldContactsList 老的用户列表
      * @param newContactsList 新获取的用户列表
      */
-    void cleanLocalAvatar(List<ContactEntity> oldContactsList, List<ContactEntity> newContactsList) {
+    private void cleanLocalAvatar(List<ContactEntity> oldContactsList, List<ContactEntity> newContactsList) {
 
         for (ContactEntity oldContact : oldContactsList) {
             String oldPhone = oldContact.getPhone();
@@ -370,6 +359,30 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         }
     }
 
+    static class NotifyHandler extends Handler {
+        WeakReference<BaseActivity> baseActivity;
+
+        NotifyHandler(BaseActivity _activity) {
+            baseActivity = new WeakReference<>(_activity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            BaseActivity _activity = baseActivity.get();
+
+            if (_activity == null)
+                return;
+
+            if (msg.what == MESSAGE_REFRESH_COUNT) {
+                _activity.notify.show(String.format("正在玩命加载头像，剩余%d", msg.arg1), NotifyBar.IconType.Progress);
+            } else if (msg.what == MESSAGE_DONE) {
+                _activity.baseApp.setIsLoadMostAvatars(true);
+                _activity.notify.show("已全部加载完毕：）", NotifyBar.IconType.Success);
+                _activity.notify.hide(2000);
+            }
+        }
+    }
+
     class LoadContactTask extends AsyncTask<Integer, Void, Boolean> {
         int taskType = 0;
 
@@ -383,14 +396,14 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         @Override
         protected Boolean doInBackground(Integer... params) {
             taskType = params[0];
-            String result = Dal.readFromHttp(baseApp.getServiceUrl(), baseApp.getUserName(), baseApp.getPassword());
+            String result = Dal.readFromHttp(mBaseApp.getServiceUrl(), mBaseApp.getUserName(), mBaseApp.getPassword());
             if (result == null || result.isEmpty())
                 return false;
 
-            if (!Dal.SaveToFile(baseApp, result))
+            if (!Dal.SaveToFile(mBaseApp, result))
                 return false;
 
-            List<ContactEntity> temp = Dal.getList(baseApp);
+            List<ContactEntity> temp = Dal.getList(mBaseApp);
             cleanLocalAvatar(mTotalContacts, temp);
 
             mTotalContacts = temp;
@@ -415,14 +428,14 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                 mSearchText.setText("");
 
                 if (taskType == TRIGGER_HAND_REFRESH) {
-                    baseActivity.notify.show("更新成功：）", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
+                    mBaseActivity.notify.show("更新成功：）", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
                     showImageProcessBar();
                 }
-
-                baseApp.setLastModifyTime(new Date().getTime());
+                ZImage.getInstance().reloadMemory();
+                mBaseApp.setLastModifyTime(new Date().getTime());
             } else {
-                Utils.toast(baseApp, R.string.alert_refresh_failed);
-                baseApp.setIsLogin(false);
+                Utils.toast(mBaseApp, R.string.alert_refresh_failed);
+                mBaseApp.setIsLogin(false);
                 ((MainActivity) getActivity()).JumpToLogin();
             }
         }

@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue_light"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context="zhexian.app.smartcall.ContactDetailActivity">
@@ -143,31 +142,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/detail_phone_number_container"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/detail_phone_number"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_alignParentLeft="true"
                         android:background="@drawable/alpha_btn_background"
-                        android:gravity="left|center_vertical"
-                        android:padding="5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="8dp"
                         android:textColor="@color/gray"
-                        android:textSize="21sp" />
+                        android:textSize="22sp" />
 
                     <ImageView
                         android:layout_width="@dimen/icon_small_size"
                         android:layout_height="@dimen/icon_small_size"
-                        android:layout_gravity="right|center_vertical"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:background="@drawable/alpha_btn_background"
                         android:src="@drawable/call_btn" />
-                </LinearLayout>
+                </RelativeLayout>
 
 
                 <View style="@style/horizontal_split_view" />
@@ -178,7 +177,6 @@
                     android:layout_height="@dimen/icon_small_size"
                     android:layout_gravity="right|center_vertical"
                     android:layout_marginRight="8dp"
-                    android:background="@drawable/alpha_btn_background"
                     android:src="@drawable/message_icon" />
             </LinearLayout>
         </android.support.v7.widget.CardView>
@@ -197,31 +195,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/detail_short_phone_number_container"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:layout_weight="1">
 
                     <TextView
                         android:id="@+id/detail_short_phone_number"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_alignParentLeft="true"
                         android:background="@drawable/alpha_btn_background"
-                        android:gravity="left|center_vertical"
-                        android:padding="5dp"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="8dp"
                         android:textColor="@color/gray"
-                        android:textSize="21sp" />
+                        android:textSize="22sp" />
 
                     <ImageView
                         android:layout_width="@dimen/icon_small_size"
                         android:layout_height="@dimen/icon_small_size"
-                        android:layout_gravity="right|center_vertical"
-                        android:background="@drawable/alpha_btn_background"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
                         android:src="@drawable/call_btn" />
-                </LinearLayout>
+                </RelativeLayout>
 
                 <View style="@style/horizontal_split_view" />
 

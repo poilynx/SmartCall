@@ -3,7 +3,6 @@
     android:id="@+id/contact_main_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue_light"
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 

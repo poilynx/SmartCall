@@ -21,7 +21,7 @@ import zhexian.app.smartcall.tools.Utils;
  * 数据访问层
  */
 public class Dal {
-    public static final String CONTACTS_FILE_NAME = "user_list.json";
+    private static final String CONTACTS_FILE_NAME = "user_list.json";
 
     public static List<ContactEntity> getList(BaseApplication baseApp) {
         return readListFromJson(baseApp);
@@ -54,13 +54,13 @@ public class Dal {
 
             if (baseApp.isNetworkWifi()) {
                 int maxIndex = list.size() - 1;
-                String existsFileUrls = sqlHelper.getSavedUrlList();
+                String existsFileUrls = sqlHelper.getSavedHttpUrlList();
                 for (int i = maxIndex; i >= 0; i--) {
                     ContactEntity entity = list.get(i);
 
                     boolean isAvatarNew = !entity.getAvatarURL().isEmpty() && !existsFileUrls.contains(entity.getAvatarURL());
                     if (isAvatarNew)
-                        ImageTaskManager.getInstance().addTask(new SaveImageTask(baseApp, entity.getAvatarURL(), Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE));
+                        ImageTaskManager.getInstance().addTask(new SaveImageTask(baseApp, entity.getAvatarURL(), Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE), ImageTaskManager.WorkType.LIFO);
                 }
             }
             baseApp.saveToFile(CONTACTS_FILE_NAME, LoganSquare.serialize(list, ContactEntity.class));
@@ -73,7 +73,7 @@ public class Dal {
     }
 
 
-    public static List<ContactEntity> readListFromJson(BaseApplication baseApp) {
+    private static List<ContactEntity> readListFromJson(BaseApplication baseApp) {
         boolean isFileExist = baseApp.isLocalFileExist(CONTACTS_FILE_NAME);
 
         if (!isFileExist)

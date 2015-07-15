@@ -23,11 +23,11 @@ public class ZHttp {
         mOkHttpClient.setConnectTimeout(30, TimeUnit.SECONDS);
     }
 
-    public static OkHttpClient getHttpClient() {
+    private static OkHttpClient getHttpClient() {
         return mOkHttpClient;
     }
 
-    public static Response execute(String url) {
+    private static Response execute(String url) {
         Request request = new Builder().url(url).build();
         try {
             Response response = getHttpClient().newCall(request).execute();

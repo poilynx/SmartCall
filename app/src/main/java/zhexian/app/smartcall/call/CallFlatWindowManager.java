@@ -19,8 +19,7 @@ import zhexian.app.smartcall.tools.Utils;
 /**
  * 来电悬浮窗管理类
  */
-public class CallFlatWindowManager {
-    private int IMAGE_SIZE = 128;
+class CallFlatWindowManager {
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams layoutParams;
     private View view;
@@ -86,6 +85,7 @@ public class CallFlatWindowManager {
         }
         String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
 
+        int IMAGE_SIZE = 128;
         if (ZIO.isExist(cachedUrl))
             imageView.setImageBitmap(Utils.getScaledBitMap(cachedUrl, IMAGE_SIZE, IMAGE_SIZE));
         else

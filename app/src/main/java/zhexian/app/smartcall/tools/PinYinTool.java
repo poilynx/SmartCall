@@ -18,7 +18,6 @@ public class PinYinTool {
         t3.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
         t3.setVCharType(HanyuPinyinVCharType.WITH_V);
         String t4 = "";
-        int t0 = t1.length;
         try {
             for (char aT1 : t1) {
 

@@ -2,8 +2,11 @@ package zhexian.app.smartcall.image;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.widget.ImageView;
+
+import java.lang.ref.WeakReference;
 
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.lib.ZHttp;
@@ -17,40 +20,26 @@ import zhexian.app.smartcall.tools.Utils;
 public class LoadImageTask extends BaseImageAsyncTask {
 
     private static final int MSG_IMAGE_LOAD_DONE = 1;
-    private static final int MSG_IMAGE_CANCEL = 2;
     private BaseApplication baseApp;
+    private ImageView mImageView;
     private String url;
     private int width;
     private int height;
-    private boolean isCache;
-    private ILoadImageCallBack iLoadImageCallBack;
-    private Bitmap bitmap;
-    private ImageView imageView;
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == MSG_IMAGE_LOAD_DONE) {
-                if (bitmap != null)
-                    iLoadImageCallBack.onDone(url, imageView, bitmap, isCache);
-            } else if (msg.what == MSG_IMAGE_CANCEL) {
-                imageView.setTag("");
-            }
-        }
-    };
+    private boolean mIsCache;
 
-    public LoadImageTask(BaseApplication baseApp, ImageView imageView, String url, int width, int height, boolean isCache, ILoadImageCallBack iLoadImageCallBack) {
+    public LoadImageTask(BaseApplication baseApp, ImageView imageView, String url, int width, int height, boolean isCache) {
         this.baseApp = baseApp;
         this.url = url;
         this.width = width;
         this.height = height;
-        this.isCache = isCache;
-        this.iLoadImageCallBack = iLoadImageCallBack;
-        this.imageView = imageView;
+        mImageView = imageView;
+        mIsCache = isCache;
     }
 
     @Override
     public void run() {
         String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
+        Bitmap bitmap = null;
 
         if (ZIO.isExist(cachedUrl))
             bitmap = Utils.getScaledBitMap(cachedUrl, width, height);
@@ -58,12 +47,14 @@ public class LoadImageTask extends BaseImageAsyncTask {
         if (bitmap == null && baseApp.isNetworkWifi()) {
             bitmap = ZHttp.getBitmap(url, width, height);
 
-            if (bitmap != null && bitmap.getByteCount() > 0)
+            if (mIsCache && bitmap != null && bitmap.getByteCount() > 0)
                 ZImage.getInstance().saveToLocal(bitmap, url, cachedUrl);
         }
 
-        handler.sendEmptyMessage(MSG_IMAGE_LOAD_DONE);
-        ImageTaskManager.getInstance().Done(LOAD_IMAGE_TASK_ID);
+        if (bitmap != null) {
+            new ImageDoneHandler(baseApp.getMainLooper(), mImageView, bitmap, url, mIsCache).sendEmptyMessage(MSG_IMAGE_LOAD_DONE);
+        }
+        ImageTaskManager.getInstance().Done(getTaskId());
     }
 
     @Override
@@ -76,12 +67,38 @@ public class LoadImageTask extends BaseImageAsyncTask {
         return url;
     }
 
-    @Override
-    public void onCancel() {
-        handler.sendEmptyMessage(MSG_IMAGE_CANCEL);
-    }
+    static class ImageDoneHandler extends Handler {
+        WeakReference<ImageView> imageView;
+        WeakReference<Bitmap> bitmap;
+        WeakReference<String> url;
+        boolean isCache;
 
-    public interface ILoadImageCallBack {
-        void onDone(String url, ImageView imageView, Bitmap bitmap, boolean isCache);
+
+        ImageDoneHandler(Looper looper, ImageView _imageView, Bitmap _bitmap, String url, boolean isCache) {
+            super(looper);
+            imageView = new WeakReference<>(_imageView);
+            bitmap = new WeakReference<>(_bitmap);
+            this.url = new WeakReference<>(url);
+            this.isCache = isCache;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what != MSG_IMAGE_LOAD_DONE)
+                return;
+
+            ImageView _imageView = imageView.get();
+            Bitmap _bitmap = bitmap.get();
+            String _url = url.get();
+            if (_imageView == null || _bitmap == null)
+                return;
+
+            if (_url.equals(_imageView.getTag().toString())) {
+                _imageView.setImageBitmap(_bitmap);
+
+                if (isCache)
+                    ZImage.getInstance().putToMemoryCache(_url, _bitmap);
+            }
+        }
     }
 }

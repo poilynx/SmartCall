@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -23,23 +24,22 @@ import zhexian.app.smartcall.tools.Utils;
  * 通用下拉通知类
  */
 public class NotifyBar {
-    public static final int SLIDE_ANIMATION_MILLION_SECONDS = 500;
     public static final int DURATION_SHORT = 2500;
     public static final int DURATION_MIDDLE = 5000;
     public static final int DURATION_LONG = 8000;
+    private static final int SLIDE_ANIMATION_MILLION_SECONDS = 500;
     private static final int HANDLER_HIDE_NOTIFY_BAR = 1;
+    private static Handler hideHandler;
+    private static Handler hideAnimationHandler;
     private Activity mActivity;
     private WindowManager mWindowManager = null;
     private View mNotifyView = null;
-    private WindowManager.LayoutParams mNotifyViewLayout;
     private View mProgress;
     private ImageView mIcon;
     private TextView mNotifyText;
     private Timer hideTimer;
     private TimerTask hideTimerTask;
-    private Handler hideHandler;
     private TimerTask hideAnimationTimerTask;
-    private Handler hideAnimationHandler;
     private ObjectAnimator slideAnimation;
     private boolean mIsAddedView;
     private boolean mIsShow;
@@ -49,30 +49,16 @@ public class NotifyBar {
         mIsAddedView = false;
     }
 
+
     private void initNotifyView() {
         if (mIsAddedView)
             return;
 
         hideTimer = new Timer();
-        hideHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == HANDLER_HIDE_NOTIFY_BAR) {
-                    mNotifyView.setVisibility(View.GONE);
-                    mIsShow = false;
-                }
-            }
-        };
+        hideHandler = new HideHandler(this);
+        hideAnimationHandler = new HideAnimationHandler(this);
 
-        hideAnimationHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == HANDLER_HIDE_NOTIFY_BAR) {
-                    hide();
-                }
-            }
-        };
-        mNotifyViewLayout = new WindowManager.LayoutParams(
+        WindowManager.LayoutParams mNotifyViewLayout = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.TYPE_TOAST,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.RGBA_8888);
@@ -196,5 +182,46 @@ public class NotifyBar {
         Progress,
         Error,
         Success
+    }
+
+    static class HideHandler extends Handler {
+        WeakReference<NotifyBar> notifyBar;
+
+        HideHandler(NotifyBar notifyBar) {
+            this.notifyBar = new WeakReference<>(notifyBar);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            NotifyBar _notifyBar = notifyBar.get();
+
+            if (_notifyBar == null)
+                return;
+
+            if (msg.what == HANDLER_HIDE_NOTIFY_BAR) {
+                _notifyBar.mNotifyView.setVisibility(View.GONE);
+                _notifyBar.mIsShow = false;
+            }
+        }
+    }
+
+    static class HideAnimationHandler extends Handler {
+        WeakReference<NotifyBar> notifyBar;
+
+        HideAnimationHandler(NotifyBar notifyBar) {
+            this.notifyBar = new WeakReference<>(notifyBar);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            NotifyBar _notifyBar = notifyBar.get();
+
+            if (_notifyBar == null)
+                return;
+
+            if (msg.what == HANDLER_HIDE_NOTIFY_BAR) {
+                _notifyBar.hide();
+            }
+        }
     }
 }

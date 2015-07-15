@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue_light"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context="zhexian.app.smartcall.LoginActivity">
@@ -114,7 +113,7 @@
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
                     android:hint="输入密码"
-                    android:password="true"
+                    android:inputType="textPassword"
                     android:textColorHint="@color/gray_light" />
             </LinearLayout>
 

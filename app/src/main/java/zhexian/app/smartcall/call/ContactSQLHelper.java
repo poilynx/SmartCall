@@ -9,14 +9,11 @@ import android.database.sqlite.SQLiteOpenHelper;
  * 本地通讯录sqlite管理类
  */
 public class ContactSQLHelper {
-
     private static ContactSQLHelper mContactSQLHelper;
-    private Context mContext;
     private ContactSQLiteDal contactSQLiteDal;
 
-    public ContactSQLHelper(Context context) {
-        mContext = context;
-        contactSQLiteDal = new ContactSQLiteDal(mContext);
+    private ContactSQLHelper(Context context) {
+        contactSQLiteDal = new ContactSQLiteDal(context);
     }
 
     public static void Init(Context context) {
@@ -54,9 +51,9 @@ public class ContactSQLHelper {
         return entity;
     }
 
-    public String getSavedUrlList() {
+    public String getSavedHttpUrlList() {
         StringBuilder sb = new StringBuilder();
-        Cursor cursor = getDb(true).rawQuery("select filePath from savedFile", null);
+        Cursor cursor = getDb(true).rawQuery("select httpPath from savedFile", null);
 
         while (cursor.moveToNext()) {
             sb.append(String.format("%s;", cursor.getString(0)));
@@ -65,17 +62,17 @@ public class ContactSQLHelper {
         return sb.toString();
     }
 
-    public void addFilePath(String path) {
+    public void addFilePath(String httpPath, String localPath) {
         try {
-            getDb(false).execSQL("insert into savedFile(filePath) values(?)", new String[]{path});
+            getDb(false).execSQL("insert into savedFile(httpPath,localPath) values(?,?)", new String[]{httpPath, localPath});
         } catch (Exception e) {
             //重复数据不插
             e.printStackTrace();
         }
     }
 
-    public void deleteFilePath(String path) {
-        getDb(false).execSQL("delete from savedFile where filePath=?", new String[]{path});
+    public void deleteFilePath(String httpPath) {
+        getDb(false).execSQL("delete from savedFile where httpPath=?", new String[]{httpPath});
     }
 
     class ContactSQLiteDal extends SQLiteOpenHelper {
@@ -86,7 +83,7 @@ public class ContactSQLHelper {
         @Override
         public void onCreate(SQLiteDatabase sqLiteDatabase) {
             sqLiteDatabase.execSQL("create table contact (phoneNo text,shortPhoneNo text,userName text,jobTitle text,avatarUrl text);");
-            sqLiteDatabase.execSQL("create table savedFile(filePath text UNIQUE);");
+            sqLiteDatabase.execSQL("create table savedFile(httpPath text UNIQUE,localPath text);");
         }
 
         @Override

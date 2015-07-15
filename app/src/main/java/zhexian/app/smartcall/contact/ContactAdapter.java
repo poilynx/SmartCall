@@ -21,7 +21,7 @@ import zhexian.app.smartcall.ui.NotifyBar;
 /**
  * 联系人绑定类
  */
-public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int NORMAL_ITEM = 0;
     private static final int GROUP_ITEM = 1;
@@ -32,7 +32,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ContactListFragment mContactListFragment;
 
     public ContactAdapter(ContactListFragment contactListFragment, List<ContactEntity> mDataList) {
-        this.mBaseActivity = contactListFragment.baseActivity;
+        this.mBaseActivity = contactListFragment.mBaseActivity;
         this.mDataList = mDataList;
         mLayoutInflater = LayoutInflater.from(mBaseActivity);
         mBaseApp = (BaseApplication) mBaseActivity.getApplication();
@@ -80,7 +80,7 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return current != previous ? GROUP_ITEM : NORMAL_ITEM;
     }
 
-    void bindNormalItem(ContactEntity entity, NormalItemHolder normalItemHolder) {
+    private void bindNormalItem(ContactEntity entity, NormalItemHolder normalItemHolder) {
         ZImage.getInstance().load(entity.getAvatarURL(), normalItemHolder.userAvatar,
                 Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE, true, mBaseApp.isNetworkWifi());
 
@@ -88,12 +88,12 @@ public class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         normalItemHolder.userJob.setText(entity.getJobTitle());
     }
 
-    void bindGroupItem(ContactEntity entity, GroupItemHolder holder) {
+    private void bindGroupItem(ContactEntity entity, GroupItemHolder holder) {
         bindNormalItem(entity, holder);
         holder.userGroup.setText(String.valueOf(entity.getUserNameStartPY()));
     }
 
-    public String GetCallNumber(boolean isCallShort, String longNo, String shortNo) {
+    private String GetCallNumber(boolean isCallShort, String longNo, String shortNo) {
 
         if (shortNo.isEmpty())
             return longNo;

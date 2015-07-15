@@ -33,7 +33,7 @@ public class SaveImageTask extends BaseImageAsyncTask {
                 ZImage.getInstance().saveToLocal(bitmap, url, cachedUrl);
         }
 
-        ImageTaskManager.getInstance().Done(SAVE_IMAGE_TASK_ID);
+        ImageTaskManager.getInstance().Done(getTaskId());
     }
 
     @Override

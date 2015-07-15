@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -18,29 +19,9 @@ import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.tools.Utils;
 
 public class MainActivity extends BaseActivity {
-
-    private int intro_count_second = 8;
-    private TextView mConfirmText;
-    private int MSG_BTN_ENABLE_TICK = 0;
-    private View confirmBtn;
-    private Timer introConfirmBtnEnableTimer;
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == MSG_BTN_ENABLE_TICK) {
-                intro_count_second--;
-
-                if (intro_count_second == 0) {
-                    mConfirmText.setText("知道啦");
-                    confirmBtn.setEnabled(true);
-                    introConfirmBtnEnableTimer.cancel();
-                    return;
-                }
-
-                mConfirmText.setText(String.format("%d秒后可用", intro_count_second));
-            }
-        }
-    };
+    private static final int MSG_BTN_ENABLE_TICK = 0;
+    private static int intro_count_second = 8;
+    private Timer mBtnEnableTimer;
 
     public static void actionStart(Activity context) {
         Intent intent = new Intent(context, MainActivity.class);
@@ -61,7 +42,8 @@ public class MainActivity extends BaseActivity {
         bindIntroduce();
     }
 
-    void bindIntroduce() {
+
+    private void bindIntroduce() {
         if (baseApp.isReadIntroduce())
             return;
 
@@ -69,31 +51,70 @@ public class MainActivity extends BaseActivity {
         final FrameLayout frameLayout = (FrameLayout) findViewById(R.id.contact_main_container);
         frameLayout.addView(introView);
         Utils.GenerateColorAnimator(this, R.animator.intro_window_bg, introView).start();
-        mConfirmText = (TextView) findViewById(R.id.intro_confirm_text);
-        confirmBtn = findViewById(R.id.intro_confirm_btn);
+        TextView mConfirmText = (TextView) findViewById(R.id.intro_confirm_text);
+        View mConfirmBtn = findViewById(R.id.intro_confirm_btn);
 
-        confirmBtn.setOnClickListener(new View.OnClickListener() {
+        mConfirmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 frameLayout.removeView(introView);
                 baseApp.setIsReadIntroduce(true);
             }
         });
-        confirmBtn.setEnabled(false);
+        mConfirmBtn.setEnabled(false);
 
-        introConfirmBtnEnableTimer = new Timer();
+        mBtnEnableTimer = new Timer();
+        final BtnAvailableHandler btnAvailableHandler = new BtnAvailableHandler(mConfirmText, mConfirmBtn, mBtnEnableTimer);
+
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                handler.sendEmptyMessage(MSG_BTN_ENABLE_TICK);
+                btnAvailableHandler.sendEmptyMessage(MSG_BTN_ENABLE_TICK);
             }
         };
-        introConfirmBtnEnableTimer.schedule(timerTask, 0, 1000);
-
+        mBtnEnableTimer.schedule(timerTask, 0, 1000);
     }
 
     public void JumpToLogin() {
         finish();
         LoginActivity.actionStart(this);
+    }
+
+    static class BtnAvailableHandler extends Handler {
+        WeakReference<TextView> confirmText;
+        WeakReference<View> confirmBtn;
+        WeakReference<Timer> btnEnableTimer;
+
+        BtnAvailableHandler(TextView _confirmText, View _confirmBtn, Timer _btnEnableTimer) {
+            confirmText = new WeakReference<>(_confirmText);
+            confirmBtn = new WeakReference<>(_confirmBtn);
+            btnEnableTimer = new WeakReference<>(_btnEnableTimer);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what != MSG_BTN_ENABLE_TICK)
+                return;
+
+            TextView _confirmText = confirmText.get();
+            View _confirmBtn = confirmBtn.get();
+            Timer _btnEnableTimer = btnEnableTimer.get();
+
+            if (_confirmText == null || _confirmBtn == null || _btnEnableTimer == null) {
+                if (_btnEnableTimer != null)
+                    _btnEnableTimer.cancel();
+                return;
+            }
+
+            intro_count_second--;
+
+            if (intro_count_second == 0) {
+                _confirmText.setText("知道啦");
+                _confirmBtn.setEnabled(true);
+                _btnEnableTimer.cancel();
+                return;
+            }
+            _confirmText.setText(String.format("%d秒后可用", intro_count_second));
+        }
     }
 }
