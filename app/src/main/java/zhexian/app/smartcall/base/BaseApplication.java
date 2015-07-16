@@ -196,3 +196,6 @@ public class BaseApplication extends Application {
         mSp.edit().putInt(PARAM_IMAGE_POOL_SIZE, mImageCachePoolSize).apply();
     }
 }
+
+
+
