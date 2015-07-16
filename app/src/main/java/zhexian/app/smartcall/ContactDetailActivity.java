@@ -16,7 +16,6 @@ import zhexian.app.smartcall.contact.ContactEntity;
 import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.lib.ZContact;
 import zhexian.app.smartcall.tools.DoAction;
-import zhexian.app.smartcall.tools.Utils;
 import zhexian.app.smartcall.ui.NotifyBar;
 
 public class ContactDetailActivity extends BaseActivity implements View.OnClickListener, View.OnLongClickListener {
@@ -154,7 +153,7 @@ public class ContactDetailActivity extends BaseActivity implements View.OnClickL
         if (mEntity == null)
             return;
 
-        ZImage.getInstance().load(mEntity.getAvatarURL(), mUserAvatar, Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE, true, baseApp.isNetworkWifi());
+        ZImage.getInstance().load(mEntity.getAvatarURL(), mUserAvatar);
         mUserName.setText(mEntity.getUserName());
         mJobTitle.setText(mEntity.getJobTitle());
         mCompany.setText(mEntity.getCompany());

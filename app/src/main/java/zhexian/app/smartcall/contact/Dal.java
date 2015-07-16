@@ -15,7 +15,6 @@ import zhexian.app.smartcall.image.SaveImageTask;
 import zhexian.app.smartcall.lib.ZHttp;
 import zhexian.app.smartcall.lib.ZIO;
 import zhexian.app.smartcall.tools.PinYinTool;
-import zhexian.app.smartcall.tools.Utils;
 
 /**
  * 数据访问层
@@ -55,12 +54,13 @@ public class Dal {
             if (baseApp.isNetworkWifi()) {
                 int maxIndex = list.size() - 1;
                 String existsFileUrls = sqlHelper.getSavedHttpUrlList();
+                int avatarWidth = baseApp.getAvatarWidth();
                 for (int i = maxIndex; i >= 0; i--) {
                     ContactEntity entity = list.get(i);
 
                     boolean isAvatarNew = !entity.getAvatarURL().isEmpty() && !existsFileUrls.contains(entity.getAvatarURL());
                     if (isAvatarNew)
-                        ImageTaskManager.getInstance().addTask(new SaveImageTask(baseApp, entity.getAvatarURL(), Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE), ImageTaskManager.WorkType.LIFO);
+                        ImageTaskManager.getInstance().addTask(new SaveImageTask(baseApp, entity.getAvatarURL(), avatarWidth, avatarWidth), ImageTaskManager.WorkType.LIFO);
                 }
             }
             baseApp.saveToFile(CONTACTS_FILE_NAME, LoganSquare.serialize(list, ContactEntity.class));

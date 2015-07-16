@@ -1,8 +1,6 @@
 package zhexian.app.smartcall.image;
 
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -18,25 +16,15 @@ import zhexian.app.smartcall.tools.Utils;
 
 public class ZImage {
 
-    /**
-     * 内存最大单张200KB
-     */
-    private static final int MAX_CACHED_IMAGE_SIZE = 200 * 1024;
-
     private static ZImage mZImage;
     private LruCache<String, Bitmap> mMemoryCache;
-
-    private BaseApplication mApp;
+    private BaseApplication baseApp;
     private Bitmap placeHolderBitmap;
-
     private ZImage(Activity activity) {
-        mApp = (BaseApplication) activity.getApplication();
+        baseApp = (BaseApplication) activity.getApplication();
         placeHolderBitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.user_default);
-        ActivityManager activityManager = (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
 
-        //申请总内存的1/8来创建图片内存池，在3G内存上，约为32MB
-        int memorySize = activityManager.getMemoryClass() * 1024 * 1024 / 8;
-        mMemoryCache = new LruCache<String, Bitmap>(memorySize) {
+        mMemoryCache = new LruCache<String, Bitmap>(baseApp.getImageCachePoolSize()) {
             protected int sizeOf(String key, Bitmap bitmap) {
                 return bitmap.getByteCount();
             }
@@ -45,11 +33,7 @@ public class ZImage {
 
     public static void Init(Activity activity) {
         if (mZImage == null)
-
-            synchronized (ZImage.class) {
-                if (mZImage == null)
-                    mZImage = new ZImage(activity);
-            }
+            mZImage = new ZImage(activity);
     }
 
     public static ZImage getInstance() {
@@ -63,7 +47,11 @@ public class ZImage {
         imageView.setImageBitmap(placeHolderBitmap);
     }
 
-    public void load(String url, ImageView imageView, int width, int height, boolean isCache, boolean canQueryHttp) {
+    public void load(String url, ImageView imageView) {
+        load(url, imageView, baseApp.getAvatarWidth(), baseApp.getAvatarWidth(), CacheType.DiskMemory, baseApp.isNetworkWifi());
+    }
+
+    public void load(String url, ImageView imageView, int width, int height, CacheType cacheType, boolean canQueryHttp) {
         if (url.isEmpty()) {
             loadEmpty(imageView);
             return;
@@ -77,7 +65,7 @@ public class ZImage {
         }
 
         loadEmpty(imageView);
-        String cachedUrl = ZString.getFileCachedDir(url, mApp.getFilePath());
+        String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
 
         if (ZIO.isExist(cachedUrl)) {
             bitmap = Utils.getScaledBitMap(cachedUrl, width, height);
@@ -85,7 +73,7 @@ public class ZImage {
             if (bitmap != null) {
                 imageView.setImageBitmap(bitmap);
 
-                if (isCache)
+                if (cacheType == CacheType.DiskMemory)
                     putToMemoryCache(url, bitmap);
 
                 return;
@@ -95,7 +83,7 @@ public class ZImage {
         if (!canQueryHttp)
             return;
 
-        ImageTaskManager.getInstance().addTask(new LoadImageTask(mApp, imageView, url, width, height, isCache), ImageTaskManager.WorkType.LIFO);
+        ImageTaskManager.getInstance().addTask(new LoadImageTask(baseApp, imageView, url, width, height, cacheType), ImageTaskManager.WorkType.LIFO);
     }
 
     public Bitmap getBitMap(String url) {
@@ -109,7 +97,7 @@ public class ZImage {
             return bitmap;
         }
 
-        String cachedUrl = ZString.getFileCachedDir(url, mApp.getFilePath());
+        String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
 
         if (ZIO.isExist(cachedUrl)) {
             bitmap = Utils.getBitMap(cachedUrl);
@@ -123,7 +111,7 @@ public class ZImage {
 
     public void deleteFromLocal(String httpUrl) {
         mMemoryCache.remove(httpUrl);
-        String cachedUrl = ZString.getFileCachedDir(httpUrl, mApp.getFilePath());
+        String cachedUrl = ZString.getFileCachedDir(httpUrl, baseApp.getFilePath());
         ZIO.deleteFile(cachedUrl);
         ContactSQLHelper.getInstance().deleteFilePath(httpUrl);
     }
@@ -142,8 +130,30 @@ public class ZImage {
     }
 
     void putToMemoryCache(String url, Bitmap bitmap) {
-        if (bitmap != null && bitmap.getByteCount() < MAX_CACHED_IMAGE_SIZE)
+        if (bitmap != null && bitmap.getByteCount() > 0)
             mMemoryCache.put(url, bitmap);
+    }
+
+    /**
+     * 缓存类型
+     */
+    public enum CacheType {
+
+        /**
+         * 不缓存
+         */
+        None,
+
+
+        /**
+         * 缓存到硬盘
+         */
+        Disk,
+
+        /**
+         * 缓存到硬盘和内存
+         */
+        DiskMemory
     }
 
 }

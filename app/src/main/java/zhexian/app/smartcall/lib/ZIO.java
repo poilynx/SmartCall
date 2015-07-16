@@ -193,11 +193,10 @@ public class ZIO {
         ZIO.createFile(cachedUrl);
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(cachedUrl);
-            Bitmap.CompressFormat format = cachedUrl.toLowerCase().indexOf("jpeg") > 0 ? Bitmap.CompressFormat.JPEG : Bitmap.CompressFormat.PNG;
-
             if (bitmap != null && bitmap.getByteCount() > 0) {
-                bitmap.compress(format, 100, fos);
+                fos = new FileOutputStream(cachedUrl);
+                Bitmap.CompressFormat format = cachedUrl.toLowerCase().indexOf("png") > 0 ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
+                bitmap.compress(format, 75, fos);
                 fos.flush();
             }
         } catch (Exception e) {

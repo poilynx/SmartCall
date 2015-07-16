@@ -25,15 +25,15 @@ public class LoadImageTask extends BaseImageAsyncTask {
     private String url;
     private int width;
     private int height;
-    private boolean mIsCache;
+    private ZImage.CacheType mCacheType;
 
-    public LoadImageTask(BaseApplication baseApp, ImageView imageView, String url, int width, int height, boolean isCache) {
+    public LoadImageTask(BaseApplication baseApp, ImageView imageView, String url, int width, int height, ZImage.CacheType cacheType) {
         this.baseApp = baseApp;
         this.url = url;
         this.width = width;
         this.height = height;
         mImageView = imageView;
-        mIsCache = isCache;
+        mCacheType = cacheType;
     }
 
     @Override
@@ -47,12 +47,14 @@ public class LoadImageTask extends BaseImageAsyncTask {
         if (bitmap == null && baseApp.isNetworkWifi()) {
             bitmap = ZHttp.getBitmap(url, width, height);
 
-            if (mIsCache && bitmap != null && bitmap.getByteCount() > 0)
+            boolean isCacheToDisk = mCacheType == ZImage.CacheType.Disk || mCacheType == ZImage.CacheType.DiskMemory;
+
+            if (isCacheToDisk && bitmap != null && bitmap.getByteCount() > 0)
                 ZImage.getInstance().saveToLocal(bitmap, url, cachedUrl);
         }
 
         if (bitmap != null) {
-            new ImageDoneHandler(baseApp.getMainLooper(), mImageView, bitmap, url, mIsCache).sendEmptyMessage(MSG_IMAGE_LOAD_DONE);
+            new ImageDoneHandler(baseApp.getMainLooper(), mImageView, bitmap, url, mCacheType).sendEmptyMessage(MSG_IMAGE_LOAD_DONE);
         }
         ImageTaskManager.getInstance().Done(getTaskId());
     }
@@ -71,15 +73,15 @@ public class LoadImageTask extends BaseImageAsyncTask {
         WeakReference<ImageView> imageView;
         WeakReference<Bitmap> bitmap;
         WeakReference<String> url;
-        boolean isCache;
+        ZImage.CacheType cacheType;
 
 
-        ImageDoneHandler(Looper looper, ImageView _imageView, Bitmap _bitmap, String url, boolean isCache) {
+        ImageDoneHandler(Looper looper, ImageView _imageView, Bitmap _bitmap, String url, ZImage.CacheType cacheType) {
             super(looper);
             imageView = new WeakReference<>(_imageView);
             bitmap = new WeakReference<>(_bitmap);
             this.url = new WeakReference<>(url);
-            this.isCache = isCache;
+            this.cacheType = cacheType;
         }
 
         @Override
@@ -96,7 +98,7 @@ public class LoadImageTask extends BaseImageAsyncTask {
             if (_url.equals(_imageView.getTag().toString())) {
                 _imageView.setImageBitmap(_bitmap);
 
-                if (isCache)
+                if (cacheType == ZImage.CacheType.DiskMemory)
                     ZImage.getInstance().putToMemoryCache(_url, _bitmap);
             }
         }

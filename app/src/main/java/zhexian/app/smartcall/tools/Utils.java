@@ -13,7 +13,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class Utils {
-    public static final int AVATAR_IMAGE_SIZE = 128;
 
     public static ObjectAnimator GenerateColorAnimator(Context context, int animatorID, Object target) {
         ObjectAnimator colorAnimation = (ObjectAnimator) AnimatorInflater.loadAnimator(context, animatorID);
@@ -86,9 +85,10 @@ public class Utils {
     }
 
 
-    public static byte[] ConvertBitMapToByte(Bitmap bitmap) {
+    public static byte[] ConvertBitMapToByte(String url, Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        Bitmap.CompressFormat format = url.toLowerCase().indexOf("png") > 0 ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
+        bitmap.compress(format, 75, stream);
         byte[] byteArray = stream.toByteArray();
 
         try {

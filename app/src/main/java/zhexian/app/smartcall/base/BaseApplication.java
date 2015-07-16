@@ -1,6 +1,8 @@
 package zhexian.app.smartcall.base;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -17,13 +19,14 @@ public class BaseApplication extends Application {
     private static final String PARAM_USER_NAME = "zhexian.app.smartcall.base.PARAM_USER_NAME";
     private static final String PARAM_PASSWORD = "zhexian.app.smartcall.base.PARAM_PASSWORD";
     private static final String PARAM_IS_LOGIN = "zhexian.app.smartcall.base.PARAM_IS_LOGIN";
-    private static final String PARAM_IS_LOAD_MOST_AVATARS = "zhexian.app.smartcall.base.PARAM_IS_LOAD_MOST_AVATARS";
     private static final String PARAM_IS_READ_INTRODUCE = "zhexian.app.smartcall.base.PARAM_IS_READ_INTRODUCE";
     private static final String PARAM_LAST_MODIFY_TIME = "zhexian.app.smartcall.base.PARAM_LAST_MODIFY_TIME";
-
+    private static final String PARAM_AVATAR_WIDTH = "zhexian.app.smartcall.base.PARAM_AVATAR_WIDTH";
+    private static final String PARAM_IMAGE_POOL_SIZE = "zhexian.app.smartcall.base.PARAM_IMAGE_POOL_SIZE";
     private SharedPreferences mSp;
+    private int mAvatarWidth;
+    private int mImageCachePoolSize;
     private boolean mIsCallShort;
-    private boolean mIsLoadMostAvatars;
     private boolean mIsReadIntroduce;
     private long mLastModifyTime;
     private String mServiceUrl;
@@ -42,12 +45,17 @@ public class BaseApplication extends Application {
         mPassword = mSp.getString(PARAM_PASSWORD, "");
         mIsCallShort = mSp.getBoolean(PARAM_CALL_SHORT, true);
         mIsLogin = mSp.getBoolean(PARAM_IS_LOGIN, false);
-        mIsLoadMostAvatars = mSp.getBoolean(PARAM_IS_LOAD_MOST_AVATARS, false);
+        mAvatarWidth = mSp.getInt(PARAM_AVATAR_WIDTH, 0);
+        mImageCachePoolSize = mSp.getInt(PARAM_IMAGE_POOL_SIZE, 0);
+
         mIsReadIntroduce = mSp.getBoolean(PARAM_IS_READ_INTRODUCE, false);
         mLastModifyTime = mSp.getLong(PARAM_LAST_MODIFY_TIME, new Date().getTime());
         mFilePath = Environment.isExternalStorageEmulated() ? getExternalFilesDir(null).getAbsolutePath() : getFilesDir().getAbsolutePath();
         mFilePath += "/";
         mNetWorkStatus = ZHttp.GetConnectType(this);
+
+        if (mImageCachePoolSize == 0)
+            setImageCachePoolSize();
     }
 
     public boolean saveToFile(String key, String content) {
@@ -59,14 +67,8 @@ public class BaseApplication extends Application {
         return ZIO.readFromFile(mFilePath + key);
     }
 
-
     public boolean isLocalFileExist(String key) {
         return ZIO.isExist(mFilePath + key);
-    }
-
-
-    public ZHttp.NetworkStatus getNetworkStatus() {
-        return mNetWorkStatus;
     }
 
     public void setNetworkStatus(ZHttp.NetworkStatus mNetworkStatus) {
@@ -145,19 +147,6 @@ public class BaseApplication extends Application {
         mSp.edit().putBoolean(PARAM_IS_LOGIN, mIsLogin).apply();
     }
 
-    public boolean isLoadMostAvatars() {
-        return mIsLoadMostAvatars;
-    }
-
-    public void setIsLoadMostAvatars(boolean isLoadMostAvatars) {
-
-        if (mIsLoadMostAvatars == isLoadMostAvatars)
-            return;
-
-        mIsLoadMostAvatars = isLoadMostAvatars;
-        mSp.edit().putBoolean(PARAM_IS_LOAD_MOST_AVATARS, mIsLoadMostAvatars).apply();
-    }
-
     public boolean isReadIntroduce() {
         return mIsReadIntroduce;
     }
@@ -180,5 +169,30 @@ public class BaseApplication extends Application {
 
         mLastModifyTime = lastModifyTime;
         mSp.edit().putLong(PARAM_LAST_MODIFY_TIME, mLastModifyTime).apply();
+    }
+
+    public int getAvatarWidth() {
+        return mAvatarWidth;
+    }
+
+    public void setAvatarWidth(int avatarWidth) {
+        if (mAvatarWidth == avatarWidth)
+            return;
+
+        mAvatarWidth = avatarWidth;
+        mSp.edit().putInt(PARAM_AVATAR_WIDTH, mAvatarWidth).apply();
+    }
+
+    public int getImageCachePoolSize() {
+        return mImageCachePoolSize;
+    }
+
+    private void setImageCachePoolSize() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+
+        // alloc 1/10 of memory to cache Image
+        int memorySize = activityManager.getMemoryClass() * 1024 * 1024 / 10;
+        mImageCachePoolSize = memorySize;
+        mSp.edit().putInt(PARAM_IMAGE_POOL_SIZE, mImageCachePoolSize).apply();
     }
 }

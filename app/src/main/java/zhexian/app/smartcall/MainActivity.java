@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -33,6 +34,17 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         ZImage.Init(this);
         ContactSQLHelper.Init(this);
+
+        if (baseApp.getAvatarWidth() == 0) {
+            DisplayMetrics dm = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+            //大于1080p，才启用256px的图片
+            if (dm.widthPixels < 1080 && dm.heightPixels < 1800)
+                baseApp.setAvatarWidth(128);
+            else
+                baseApp.setAvatarWidth(256);
+        }
 
         if (!baseApp.isLogin()) {
             JumpToLogin();

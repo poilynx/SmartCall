@@ -81,8 +81,7 @@ class ContactAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private void bindNormalItem(ContactEntity entity, NormalItemHolder normalItemHolder) {
-        ZImage.getInstance().load(entity.getAvatarURL(), normalItemHolder.userAvatar,
-                Utils.AVATAR_IMAGE_SIZE, Utils.AVATAR_IMAGE_SIZE, true, mBaseApp.isNetworkWifi());
+        ZImage.getInstance().load(entity.getAvatarURL(), normalItemHolder.userAvatar);
 
         normalItemHolder.userName.setText(entity.getUserName());
         normalItemHolder.userJob.setText(entity.getJobTitle());

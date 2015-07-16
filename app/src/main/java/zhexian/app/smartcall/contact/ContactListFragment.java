@@ -44,6 +44,7 @@ import zhexian.app.smartcall.ui.NotifyBar;
 
 
 public class ContactListFragment extends Fragment implements LetterSideBar.OnLetterChangedListener, View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
+    private static final int MIN_TASK_SHOW_IMAGE_PROGRESS_BAR = 30;
     private static final int REFRESH_PROCESS_IMAGE_DURATION = 100;
     private static final int MESSAGE_REFRESH_COUNT = 1;
     private static final int MESSAGE_DONE = 2;
@@ -223,7 +224,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         if (!mBaseApp.isNetworkWifi())
             return;
 
-        if (mBaseApp.isLoadMostAvatars())
+        if (ImageTaskManager.getInstance().getLeftSaveTaskCount() < MIN_TASK_SHOW_IMAGE_PROGRESS_BAR)
             return;
 
         isLoadingImage = true;
@@ -376,7 +377,6 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
             if (msg.what == MESSAGE_REFRESH_COUNT) {
                 _activity.notify.show(String.format("正在玩命加载头像，剩余%d", msg.arg1), NotifyBar.IconType.Progress);
             } else if (msg.what == MESSAGE_DONE) {
-                _activity.baseApp.setIsLoadMostAvatars(true);
                 _activity.notify.show("已全部加载完毕：）", NotifyBar.IconType.Success);
                 _activity.notify.hide(2000);
             }
