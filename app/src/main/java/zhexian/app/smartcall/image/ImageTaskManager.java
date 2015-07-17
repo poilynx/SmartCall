@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 public class ImageTaskManager {
 
     private static final int MAX_OPERATE_THREAD_SIZE = 5;
-    private static ImageTaskManager imageTaskManager = new ImageTaskManager();
+    private static final ImageTaskManager imageTaskManager = new ImageTaskManager();
     private HashMap<String, BaseImageAsyncTask> taskHaspMap;
     private LinkedList<String> taskUrlList;
     private ExecutorService threadPool;
