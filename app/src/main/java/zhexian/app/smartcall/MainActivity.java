@@ -15,6 +15,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import zhexian.app.smartcall.base.BaseActivity;
+import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
 import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.tools.Utils;
@@ -32,8 +33,9 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ZImage.Init(this);
-        ContactSQLHelper.Init(this);
+        BaseApplication baseApp = (BaseApplication) getApplication();
+        ZImage.Init(baseApp);
+        ContactSQLHelper.Init(baseApp);
 
         if (baseApp.getAvatarWidth() == 0) {
             DisplayMetrics dm = new DisplayMetrics();

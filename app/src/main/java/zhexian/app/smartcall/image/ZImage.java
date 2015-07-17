@@ -1,6 +1,5 @@
 package zhexian.app.smartcall.image;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -18,22 +17,23 @@ public class ZImage {
 
     private static ZImage mZImage;
     private LruCache<String, Bitmap> mMemoryCache;
-    private BaseApplication baseApp;
+    private BaseApplication mBaseApp;
     private Bitmap placeHolderBitmap;
-    private ZImage(Activity activity) {
-        baseApp = (BaseApplication) activity.getApplication();
-        placeHolderBitmap = BitmapFactory.decodeResource(activity.getResources(), R.drawable.user_default);
 
-        mMemoryCache = new LruCache<String, Bitmap>(baseApp.getImageCachePoolSize()) {
+    private ZImage(BaseApplication baseApp) {
+        mBaseApp = baseApp;
+        placeHolderBitmap = BitmapFactory.decodeResource(mBaseApp.getResources(), R.drawable.user_default);
+
+        mMemoryCache = new LruCache<String, Bitmap>(mBaseApp.getImageCachePoolSize()) {
             protected int sizeOf(String key, Bitmap bitmap) {
                 return bitmap.getByteCount();
             }
         };
     }
 
-    public static void Init(Activity activity) {
+    public static void Init(BaseApplication baseApp) {
         if (mZImage == null)
-            mZImage = new ZImage(activity);
+            mZImage = new ZImage(baseApp);
     }
 
     public static ZImage getInstance() {
@@ -48,7 +48,7 @@ public class ZImage {
     }
 
     public void load(String url, ImageView imageView) {
-        load(url, imageView, baseApp.getAvatarWidth(), baseApp.getAvatarWidth(), CacheType.DiskMemory, baseApp.isNetworkWifi());
+        load(url, imageView, mBaseApp.getAvatarWidth(), mBaseApp.getAvatarWidth(), CacheType.DiskMemory, mBaseApp.isNetworkWifi());
     }
 
     public void load(String url, ImageView imageView, int width, int height, CacheType cacheType, boolean canQueryHttp) {
@@ -65,7 +65,7 @@ public class ZImage {
         }
 
         loadEmpty(imageView);
-        String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
+        String cachedUrl = ZString.getFileCachedDir(url, mBaseApp.getFilePath());
 
         if (ZIO.isExist(cachedUrl)) {
             bitmap = Utils.getScaledBitMap(cachedUrl, width, height);
@@ -83,7 +83,7 @@ public class ZImage {
         if (!canQueryHttp)
             return;
 
-        ImageTaskManager.getInstance().addTask(new LoadImageTask(baseApp, imageView, url, width, height, cacheType), ImageTaskManager.WorkType.LIFO);
+        ImageTaskManager.getInstance().addTask(new LoadImageTask(mBaseApp, imageView, url, width, height, cacheType), ImageTaskManager.WorkType.LIFO);
     }
 
     public Bitmap getBitMap(String url) {
@@ -97,7 +97,7 @@ public class ZImage {
             return bitmap;
         }
 
-        String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
+        String cachedUrl = ZString.getFileCachedDir(url, mBaseApp.getFilePath());
 
         if (ZIO.isExist(cachedUrl)) {
             bitmap = Utils.getBitMap(cachedUrl);
@@ -111,7 +111,7 @@ public class ZImage {
 
     public void deleteFromLocal(String httpUrl) {
         mMemoryCache.remove(httpUrl);
-        String cachedUrl = ZString.getFileCachedDir(httpUrl, baseApp.getFilePath());
+        String cachedUrl = ZString.getFileCachedDir(httpUrl, mBaseApp.getFilePath());
         ZIO.deleteFile(cachedUrl);
         ContactSQLHelper.getInstance().deleteFilePath(httpUrl);
     }
