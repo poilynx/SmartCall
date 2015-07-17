@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/round_square_blue" android:state_pressed="true"></item>
-    <item android:drawable="@drawable/round_square_gray" android:state_enabled="false"></item>
-    <item android:drawable="@drawable/round_square_blue_light"></item>
+    <item android:drawable="@drawable/round_square_blue" android:state_pressed="true" />
+    <item android:drawable="@drawable/round_square_gray" android:state_enabled="false" />
+    <item android:drawable="@drawable/round_square_blue_light" />
 </selector>

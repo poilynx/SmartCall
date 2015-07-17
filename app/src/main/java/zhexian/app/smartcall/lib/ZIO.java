@@ -189,7 +189,7 @@ public class ZIO {
         return count;
     }
 
-    public static void saveBitmapToCache(Bitmap bitmap, String cachedUrl) {
+    public static void saveBitmapToDisk(Bitmap bitmap, String cachedUrl) {
         ZIO.createFile(cachedUrl);
         FileOutputStream fos = null;
         try {
@@ -204,8 +204,6 @@ public class ZIO {
         } finally {
             try {
                 fos.close();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -55,6 +55,7 @@ public class Dal {
                 int maxIndex = list.size() - 1;
                 String existsFileUrls = sqlHelper.getSavedHttpUrlList();
                 int avatarWidth = baseApp.getAvatarWidth();
+
                 for (int i = maxIndex; i >= 0; i--) {
                     ContactEntity entity = list.get(i);
 

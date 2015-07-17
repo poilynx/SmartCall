@@ -14,5 +14,5 @@
         android:textColor="@color/gray"
         android:textSize="22sp" />
 
-    <include layout="@layout/contact_list_item_normal"></include>
+    <include layout="@layout/contact_list_item_normal" />
 </LinearLayout>

@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 /**
- * 本地通讯录sqlite管理类
+ * SQLite帮助类，管理用户手机号、头像索引
  */
 public class ContactSQLHelper {
     private static ContactSQLHelper mContactSQLHelper;

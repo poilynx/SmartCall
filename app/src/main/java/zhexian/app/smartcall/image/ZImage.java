@@ -117,7 +117,7 @@ public class ZImage {
     }
 
     public void saveToLocal(Bitmap bitmap, String httpUrl, String cachedUrl) {
-        ZIO.saveBitmapToCache(bitmap, cachedUrl);
+        ZIO.saveBitmapToDisk(bitmap, cachedUrl);
         ContactSQLHelper.getInstance().addFilePath(httpUrl, cachedUrl);
     }
 

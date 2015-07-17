@@ -38,5 +38,5 @@
 
     <View
         style="@style/vertical_split_view"
-        android:layout_alignParentBottom="true"></View>
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

@@ -31,13 +31,13 @@ public class ContactEntity implements Comparable<ContactEntity>, Serializable {
     private String avatarURL;
 
     /**
-     * 全拼 chenjunjie
+     * 全拼 王力宏：wanglihong
      */
     @JsonField
     private String userNamePY;
 
     /**
-     * 简拼 cjj
+     * 简拼 王力宏：wlh
      */
     @JsonField
     private String userNameHeadPY;
