@@ -12,5 +12,5 @@
     <dimen name="icon_big_size">128dp</dimen>
     <dimen name="action_bar_height">40dp</dimen>
     <dimen name="search_bar_height">44dp</dimen>
-    <dimen name="letter_side_bar_width">28dp</dimen>
+    <dimen name="letter_side_bar_width">40dp</dimen>
 </resources>
