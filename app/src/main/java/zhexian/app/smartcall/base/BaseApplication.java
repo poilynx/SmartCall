@@ -41,7 +41,7 @@ public class BaseApplication extends Application {
         super.onCreate();
         mSp = PreferenceManager.getDefaultSharedPreferences(this);
         mServiceUrl = mSp.getString(PARAM_SERVICE_URL, getString(R.string.service_url));
-        mUserName = mSp.getString(PARAM_USER_NAME, "chenjunjie");
+        mUserName = mSp.getString(PARAM_USER_NAME, "");
         mPassword = mSp.getString(PARAM_PASSWORD, "");
         mIsCallShort = mSp.getBoolean(PARAM_CALL_SHORT, true);
         mIsLogin = mSp.getBoolean(PARAM_IS_LOGIN, false);
@@ -191,8 +191,7 @@ public class BaseApplication extends Application {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
         // alloc 1/10 of memory to cache Image
-        int memorySize = activityManager.getMemoryClass() * 1024 * 1024 / 10;
-        mImageCachePoolSize = memorySize;
+        mImageCachePoolSize = activityManager.getMemoryClass() * 1024 * 1024 / 10;
         mSp.edit().putInt(PARAM_IMAGE_POOL_SIZE, mImageCachePoolSize).apply();
     }
 }

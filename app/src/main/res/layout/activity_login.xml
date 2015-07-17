@@ -19,6 +19,19 @@
             android:text="@string/login_title"
             android:textColor="@color/white"
             android:textSize="19sp" />
+
+        <TextView
+            android:id="@+id/login_change_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="3dp"
+            android:background="@drawable/round_btn_background"
+            android:clickable="true"
+            android:padding="5dp"
+            android:text="高级模式"
+            android:textColor="@color/white_dark" />
     </RelativeLayout>
 
     <LinearLayout
@@ -38,10 +51,12 @@
             android:paddingTop="@dimen/activity_horizontal_margin">
 
             <LinearLayout
+                android:id="@+id/login_service_container"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="100dp"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="60dp"
@@ -55,15 +70,9 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
                     android:hint="服务地址"
                     android:textColorHint="@color/gray_light" />
             </LinearLayout>
-
-            <View
-                style="@style/vertical_split_view"
-                android:layout_marginBottom="8dp"
-                android:layout_marginLeft="60dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"

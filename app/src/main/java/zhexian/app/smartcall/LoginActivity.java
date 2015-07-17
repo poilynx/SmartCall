@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import zhexian.app.smartcall.base.BaseActivity;
 import zhexian.app.smartcall.base.BaseApplication;
@@ -18,7 +19,8 @@ import zhexian.app.smartcall.ui.NotifyBar;
 
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
-
+    private TextView mChangeMode;
+    private View mServiceContainer;
     private EditText mService;
     private EditText mUserName;
     private EditText mPassword;
@@ -29,6 +31,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private String userNameStr;
     private String passwordStr;
     private boolean isSubmitEnabled = true;
+    private boolean isAdvanceMode;
 
     public static void actionStart(Activity context) {
         Intent intent = new Intent(context, LoginActivity.class);
@@ -40,7 +43,8 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
+        mChangeMode = (TextView) findViewById(R.id.login_change_mode);
+        mServiceContainer = findViewById(R.id.login_service_container);
         mService = (EditText) findViewById(R.id.login_service);
         mUserName = (EditText) findViewById(R.id.login_user_name);
         mPassword = (EditText) findViewById(R.id.login_password);
@@ -49,10 +53,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         baseApp = (BaseApplication) getApplication();
         bindTextListener();
         mSubmit.setOnClickListener(this);
-
+        mChangeMode.setOnClickListener(this);
         if (!baseApp.isNetworkAvailable())
             Utils.toast(baseApp, R.string.alert_network_not_available);
     }
+
 
     @Override
     public void onClick(View view) {
@@ -62,8 +67,20 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
             case R.id.login_submit:
                 submitUser();
                 break;
+            case R.id.login_change_mode:
+                isAdvanceMode = !isAdvanceMode;
+
+                if (isAdvanceMode) {
+                    mChangeMode.setText("标准模式");
+                    mServiceContainer.setVisibility(View.VISIBLE);
+                } else {
+                    mChangeMode.setText("高级模式");
+                    mServiceContainer.setVisibility(View.GONE);
+                }
+                break;
         }
     }
+
 
     private void submitUser() {
         if (!baseApp.isNetworkAvailable()) {
