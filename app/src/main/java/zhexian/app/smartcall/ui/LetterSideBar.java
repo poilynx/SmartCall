@@ -55,7 +55,7 @@ public class LetterSideBar extends View {
         mColorAnimation = Utils.GenerateColorAnimator(getContext(), R.animator.letter_side_bar_bg_color, this);
 
         controlWidth = getResources().getDimensionPixelOffset(R.dimen.letter_side_bar_width);
-        mControlHalfWidth = (int) (controlWidth * 0.7f);
+        mControlHalfWidth = (int) (controlWidth * 0.6f);
 
         Update();
         paint = new Paint();
