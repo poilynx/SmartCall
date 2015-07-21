@@ -190,7 +190,7 @@ public class BaseApplication extends Application {
     private void setImageCachePoolSize() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 
-        // alloc 1/10 of memory to cache Image
+        // 申请app可用内存的1/10来创建bitmap 内存缓存池。
         mImageCachePoolSize = activityManager.getMemoryClass() * 1024 * 1024 / 10;
         mSp.edit().putInt(PARAM_IMAGE_POOL_SIZE, mImageCachePoolSize).apply();
     }
