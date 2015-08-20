@@ -2,7 +2,6 @@ package zhexian.app.smartcall.image;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.util.LruCache;
 import android.widget.ImageView;
 
@@ -13,6 +12,11 @@ import zhexian.app.smartcall.lib.ZIO;
 import zhexian.app.smartcall.lib.ZString;
 import zhexian.app.smartcall.tools.Utils;
 
+/**
+ * 图片管理类，访问网络图片，保存在本地
+ * 使用方式参考RequestCreator内部类
+ * 完整的使用方式ZImage.ready().want("请求地址").reSize(图片尺寸).cache(缓存方式).empty(图片占位符).into(图片空间);
+ */
 public class ZImage {
 
     private static ZImage mZImage;
@@ -36,57 +40,58 @@ public class ZImage {
             mZImage = new ZImage(baseApp);
     }
 
-    public static ZImage getInstance() {
+    /**
+     * 获得图片管理类
+     *
+     * @return
+     */
+    public static ZImage ready() {
         if (mZImage == null) {
-            Log.e("error", "ZIMAGE 需要被初始化，参考Init");
+            throw new RuntimeException("ZImage需要被初始化才能使用，建议在程序的入口处使用Init()");
         }
         return mZImage;
     }
 
-    private void loadEmpty(ImageView imageView) {
-        imageView.setImageBitmap(placeHolderBitmap);
+    /**
+     * 构造器起手式，从一个资源开始
+     *
+     * @param url
+     * @return
+     */
+    public RequestCreator want(String url) {
+        return new RequestCreator(url);
     }
 
-    public void load(String url, ImageView imageView) {
-        load(url, imageView, mBaseApp.getAvatarWidth(), mBaseApp.getAvatarWidth(), CacheType.DiskMemory, mBaseApp.isNetworkWifi());
-    }
-
-    public void load(String url, ImageView imageView, int width, int height, CacheType cacheType, boolean canQueryHttp) {
-        if (url.isEmpty()) {
-            loadEmpty(imageView);
+    /**
+     * 使用占位符
+     *
+     * @param imageView
+     * @param placeHolder
+     */
+    private void loadEmpty(ImageView imageView, int placeHolder) {
+        if (placeHolder <= 0) {
+            imageView.setImageBitmap(placeHolderBitmap);
             return;
         }
-        Bitmap bitmap = getFromMemoryCache(url);
-        imageView.setTag(url);
+
+        String key = String.valueOf(placeHolder);
+        Bitmap bitmap = getFromMemoryCache(key);
 
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
-            return;
+        } else {
+            bitmap = BitmapFactory.decodeResource(mBaseApp.getResources(), placeHolder);
+            putToMemoryCache(key, bitmap);
         }
-
-        loadEmpty(imageView);
-        String cachedUrl = ZString.getFileCachedDir(url, mBaseApp.getFilePath());
-
-        if (ZIO.isExist(cachedUrl)) {
-            bitmap = Utils.getScaledBitMap(cachedUrl, width, height);
-
-            if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
-
-                if (cacheType == CacheType.DiskMemory)
-                    putToMemoryCache(url, bitmap);
-
-                return;
-            }
-        }
-
-        if (!canQueryHttp)
-            return;
-
-        ImageTaskManager.getInstance().addTask(new LoadImageTask(mBaseApp, imageView, url, width, height, cacheType), ImageTaskManager.WorkType.LIFO);
     }
 
-    public Bitmap getBitMap(String url) {
+    /**
+     * 从本地获取BitMap
+     *
+     * @param url
+     * @return
+     */
+    public Bitmap getLocalBitMap(String url) {
         if (url.isEmpty()) {
             return placeHolderBitmap;
         }
@@ -109,6 +114,12 @@ public class ZImage {
         return placeHolderBitmap;
     }
 
+
+    /**
+     * 从本地删除图片
+     *
+     * @param httpUrl
+     */
     public void deleteFromLocal(String httpUrl) {
         mMemoryCache.remove(httpUrl);
         String cachedUrl = ZString.getFileCachedDir(httpUrl, mBaseApp.getFilePath());
@@ -116,13 +127,16 @@ public class ZImage {
         ContactSQLHelper.getInstance().deleteFilePath(httpUrl);
     }
 
+    /**
+     * 保存图片到本地，同时记录在数据表里
+     *
+     * @param bitmap
+     * @param httpUrl
+     * @param cachedUrl
+     */
     public void saveToLocal(Bitmap bitmap, String httpUrl, String cachedUrl) {
         ZIO.saveBitmapToDisk(bitmap, cachedUrl);
         ContactSQLHelper.getInstance().addFilePath(httpUrl, cachedUrl);
-    }
-
-    public void reloadMemory() {
-        ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(), ImageTaskManager.WorkType.LILO);
     }
 
     Bitmap getFromMemoryCache(String url) {
@@ -132,6 +146,49 @@ public class ZImage {
     void putToMemoryCache(String url, Bitmap bitmap) {
         if (bitmap != null && bitmap.getByteCount() > 0)
             mMemoryCache.put(url, bitmap);
+    }
+
+    /**
+     * 加载图片，经过内存、磁盘、两层缓存如果还没找到，则走http访问网络资源
+     *
+     * @param url
+     * @param imageView
+     * @param width
+     * @param height
+     * @param cacheType
+     * @param workType
+     * @param placeHolder
+     */
+    private void load(String url, ImageView imageView, int width, int height, CacheType cacheType, ImageTaskManager.WorkType workType, int placeHolder) {
+        if (url.isEmpty()) {
+            loadEmpty(imageView, placeHolder);
+            return;
+        }
+
+        Bitmap bitmap = getFromMemoryCache(url);
+        imageView.setTag(url);
+
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+            return;
+        }
+
+        loadEmpty(imageView, placeHolder);
+        String cachedUrl = ZString.getFileCachedDir(url, mBaseApp.getFilePath());
+
+        if (ZIO.isExist(cachedUrl)) {
+            bitmap = Utils.getScaledBitMap(cachedUrl, width, height);
+
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+
+                if (cacheType == CacheType.DiskMemory || cacheType == CacheType.Memory)
+                    putToMemoryCache(url, bitmap);
+
+                return;
+            }
+        }
+        ImageTaskManager.getInstance().addTask(new LoadImageTask(mBaseApp, imageView, url, width, height, cacheType), workType);
     }
 
     /**
@@ -151,9 +208,115 @@ public class ZImage {
         Disk,
 
         /**
+         * 缓存到内存
+         */
+        Memory,
+
+        /**
          * 缓存到硬盘和内存
          */
         DiskMemory
     }
 
+
+    /**
+     * 请求构造器
+     */
+    public class RequestCreator {
+        /**
+         * 请求地址
+         */
+        String url;
+
+        /**
+         * 优先级,默认后进先出
+         */
+        ImageTaskManager.WorkType priority = ImageTaskManager.WorkType.LIFO;
+
+        /**
+         * 占位图
+         */
+        int placeHolder = -1;
+
+        /**
+         * 缓存类型，默认内存缓存，基于LRU算法，不用担心内存爆炸
+         */
+        CacheType cacheType = CacheType.Memory;
+
+        /**
+         * 图片的宽度
+         */
+        int width = mBaseApp.getScreenWidth();
+
+        /**
+         * 图片的高度
+         */
+        int height = mBaseApp.getScreenHeight();
+
+        public RequestCreator(String url) {
+            this.url = url;
+        }
+
+        /**
+         * 占位图
+         *
+         * @param resID 本地图片资源 R.drawable.
+         * @return
+         */
+        public RequestCreator empty(int resID) {
+            placeHolder = resID;
+            return this;
+        }
+
+        /**
+         * 缓存
+         *
+         * @param cacheType 缓存类型，默认不缓存
+         * @return
+         */
+        public RequestCreator cache(CacheType cacheType) {
+            this.cacheType = cacheType;
+            return this;
+        }
+
+        /**
+         * 优先级，默认后进先出。使用本方法降低优先级
+         *
+         * @return
+         */
+        public RequestCreator lowPriority() {
+            priority = ImageTaskManager.WorkType.LILO;
+            return this;
+        }
+
+        /**
+         * 对图片尺寸进行缩放，节约内存
+         *
+         * @param width  图片宽度，默认屏幕宽度
+         * @param height 图片高度，默认屏幕高度
+         * @return
+         */
+        public RequestCreator reSize(int width, int height) {
+            this.width = width;
+            this.height = height;
+            return this;
+        }
+
+
+        /**
+         * 载入图片到控件
+         *
+         * @param imageView
+         */
+        public void into(ImageView imageView) {
+            mZImage.load(url, imageView, width, height, cacheType, priority, placeHolder);
+        }
+
+        /**
+         * 下载图片
+         */
+        public void save() {
+            ImageTaskManager.getInstance().addTask(new SaveImageTask(mBaseApp, url, width, height), priority);
+        }
+    }
 }

@@ -153,7 +153,8 @@ public class ContactDetailActivity extends BaseActivity implements View.OnClickL
         if (mEntity == null)
             return;
 
-        ZImage.getInstance().load(mEntity.getAvatarURL(), mUserAvatar);
+        int avatarSize = baseApp.getAvatarWidth();
+        ZImage.ready().want(mEntity.getAvatarURL()).reSize(avatarSize, avatarSize).cache(ZImage.CacheType.DiskMemory).into(mUserAvatar);
         mUserName.setText(mEntity.getUserName());
         mJobTitle.setText(mEntity.getJobTitle());
         mCompany.setText(mEntity.getCompany());

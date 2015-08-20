@@ -35,6 +35,7 @@ import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseActivity;
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.image.ImageTaskManager;
+import zhexian.app.smartcall.image.MemoryPackCacheTask;
 import zhexian.app.smartcall.image.ZImage;
 import zhexian.app.smartcall.lib.ZContact;
 import zhexian.app.smartcall.tools.Format;
@@ -132,7 +133,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         if (isNeedRefreshContacts && !isRequestData && !isLoadingImage)
             new LoadContactTask().execute(TRIGGER_AUTO_REFRESH);
         else
-            ZImage.getInstance().reloadMemory();
+            ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(), ImageTaskManager.WorkType.LILO);
     }
 
     @Override
@@ -351,12 +352,12 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                     isFound = true;
                     //用户是否修改了头像
                     if (!oldAvatar.equals(newContact.getAvatarURL()))
-                        ZImage.getInstance().deleteFromLocal(oldAvatar);
+                        ZImage.ready().deleteFromLocal(oldAvatar);
                 }
             }
             //用户被删除了，则把本地图片也删除
             if (!isFound)
-                ZImage.getInstance().deleteFromLocal(oldAvatar);
+                ZImage.ready().deleteFromLocal(oldAvatar);
         }
     }
 
@@ -431,7 +432,8 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                     mBaseActivity.notify.show("更新成功：）", NotifyBar.DURATION_SHORT, NotifyBar.IconType.Success);
                     showImageProcessBar();
                 }
-                ZImage.getInstance().reloadMemory();
+
+                ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(), ImageTaskManager.WorkType.LILO);
                 mBaseApp.setLastModifyTime(new Date().getTime());
             } else {
                 Utils.toast(mBaseApp, R.string.alert_refresh_failed);

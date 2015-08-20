@@ -37,15 +37,21 @@ public class MainActivity extends BaseActivity {
         ZImage.Init(baseApp);
         ContactSQLHelper.Init(baseApp);
 
-        if (baseApp.getAvatarWidth() == 0) {
+        if (baseApp.getScreenWidth() == 0) {
             DisplayMetrics dm = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(dm);
+            baseApp.setScreenWidth(dm.widthPixels);
+            baseApp.setScreenHeight(dm.heightPixels);
+        }
 
+        if (baseApp.getAvatarWidth() == 0) {
             //大于1080p，才启用256px的图片
-            if (dm.widthPixels < 1080 && dm.heightPixels < 1800)
-                baseApp.setAvatarWidth(128);
-            else
+            boolean isHighDisplay = Utils.isHighDisplay(baseApp.getScreenWidth(), baseApp.getScreenHeight());
+
+            if (isHighDisplay)
                 baseApp.setAvatarWidth(256);
+            else
+                baseApp.setAvatarWidth(128);
         }
 
         if (!baseApp.isLogin()) {

@@ -30,7 +30,7 @@ public class SaveImageTask extends BaseImageAsyncTask {
             Bitmap bitmap = ZHttp.getBitmap(url, width, height);
 
             if (bitmap != null && bitmap.getByteCount() > 0)
-                ZImage.getInstance().saveToLocal(bitmap, url, cachedUrl);
+                ZImage.ready().saveToLocal(bitmap, url, cachedUrl);
         }
 
         ImageTaskManager.getInstance().Done(getTaskId());

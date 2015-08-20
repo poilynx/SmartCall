@@ -26,7 +26,7 @@ public class MemoryPackCacheTask extends BaseImageAsyncTask {
 
         while (cursor.moveToNext()) {
             String httpUrl = cursor.getString(0);
-            if (ZImage.getInstance().getFromMemoryCache(httpUrl) == null)
+            if (ZImage.ready().getFromMemoryCache(httpUrl) == null)
                 ImageTaskManager.getInstance().addTask(new MemoryCacheTask(httpUrl, cursor.getString(1)), ImageTaskManager.WorkType.LILO);
         }
         cursor.close();

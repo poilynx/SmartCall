@@ -203,6 +203,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 mSubmit.setEnabled(true);
                 return;
             }
+            notify.hide();
             baseApp.setIsCallShort(mIsCallShort.isChecked());
             Utils.toast(baseApp, "登陆成功");
             baseApp.setIsLogin(true);

@@ -20,7 +20,7 @@ public class ZHttp {
     private static OkHttpClient mOkHttpClient = new OkHttpClient();
 
     private ZHttp() {
-        mOkHttpClient.setConnectTimeout(30, TimeUnit.SECONDS);
+        mOkHttpClient.setConnectTimeout(18, TimeUnit.SECONDS);
     }
 
     private static OkHttpClient getHttpClient() {

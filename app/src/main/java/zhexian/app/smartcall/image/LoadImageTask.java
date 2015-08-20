@@ -50,7 +50,7 @@ public class LoadImageTask extends BaseImageAsyncTask {
             boolean isCacheToDisk = mCacheType == ZImage.CacheType.Disk || mCacheType == ZImage.CacheType.DiskMemory;
 
             if (isCacheToDisk && bitmap != null && bitmap.getByteCount() > 0)
-                ZImage.getInstance().saveToLocal(bitmap, url, cachedUrl);
+                ZImage.ready().saveToLocal(bitmap, url, cachedUrl);
         }
 
         if (bitmap != null) {
@@ -98,8 +98,8 @@ public class LoadImageTask extends BaseImageAsyncTask {
             if (_url.equals(_imageView.getTag().toString())) {
                 _imageView.setImageBitmap(_bitmap);
 
-                if (cacheType == ZImage.CacheType.DiskMemory)
-                    ZImage.getInstance().putToMemoryCache(_url, _bitmap);
+                if (cacheType == ZImage.CacheType.DiskMemory || cacheType == ZImage.CacheType.Memory)
+                    ZImage.ready().putToMemoryCache(_url, _bitmap);
             }
         }
     }

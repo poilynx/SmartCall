@@ -1,17 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/base/BaseApplication.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/contact/Dal.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/image/ZImage.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/lib/ZBroadcast.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/lib/ZHttp.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/lib/ZIO.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/lib/ZString.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/tools/DoAction.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/tools/Utils.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/zhexian/app/smartcall/ui/LetterSideBar.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/app/src/main/res/values/colors.xml" charset="GBK" />
+  <component name="Encoding">
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

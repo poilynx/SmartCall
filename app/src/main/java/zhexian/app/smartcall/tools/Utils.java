@@ -98,4 +98,14 @@ public class Utils {
         }
         return byteArray;
     }
+
+    /**
+     * 分辨率是否大于1080p
+     * 选择1800是为了兼容魅族mx3
+     *
+     * @return
+     */
+    public static boolean isHighDisplay(int width, int height) {
+        return Math.max(width, height) >= 1800;
+    }
 }

@@ -128,7 +128,7 @@ public class NotifyBar {
         mIsShow = true;
     }
 
-    private void hide() {
+    public void hide() {
 
         if (mIsShow) {
             if (hideTimerTask != null)

@@ -78,7 +78,7 @@ public class ZContact {
                 android.provider.ContactsContract.Contacts.Data.RAW_CONTACT_ID,
                 rawContactId);
         values.put(MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE);
-        values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, Utils.ConvertBitMapToByte(entity.getAvatarURL(), ZImage.getInstance().getBitMap(entity.getAvatarURL())));
+        values.put(ContactsContract.CommonDataKinds.Photo.PHOTO, Utils.ConvertBitMapToByte(entity.getAvatarURL(), ZImage.ready().getLocalBitMap(entity.getAvatarURL())));
         content.insert(CONTENT_URI, values);
     }
 }

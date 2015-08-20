@@ -29,13 +29,13 @@ public class MemoryCacheTask extends BaseImageAsyncTask {
 
     @Override
     public void run() {
-        Bitmap bitmap = ZImage.getInstance().getFromMemoryCache(httpPath);
+        Bitmap bitmap = ZImage.ready().getFromMemoryCache(httpPath);
 
         if (bitmap == null) {
             bitmap = Utils.getBitMap(LocalPath);
 
             if (bitmap != null && bitmap.getByteCount() > 0)
-                ZImage.getInstance().putToMemoryCache(httpPath, bitmap);
+                ZImage.ready().putToMemoryCache(httpPath, bitmap);
         }
         ImageTaskManager.getInstance().Done(getTaskId());
     }
