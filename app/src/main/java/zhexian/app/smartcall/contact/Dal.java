@@ -11,8 +11,8 @@ import java.util.List;
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
 import zhexian.app.smartcall.image.ZImage;
+import zhexian.app.smartcall.lib.DBHelper;
 import zhexian.app.smartcall.lib.ZHttp;
-import zhexian.app.smartcall.lib.ZIO;
 import zhexian.app.smartcall.tools.PinYinTool;
 
 /**
@@ -21,8 +21,8 @@ import zhexian.app.smartcall.tools.PinYinTool;
 public class Dal {
     private static final String CONTACTS_FILE_NAME = "user_list.json";
 
-    public static List<ContactEntity> getList(BaseApplication baseApp) {
-        return readListFromJson(baseApp);
+    public static List<ContactEntity> getList() {
+        return DBHelper.cache().getList(CONTACTS_FILE_NAME, ContactEntity.class);
     }
 
     public static Boolean SaveToFile(BaseApplication baseApp, String content) {
@@ -62,7 +62,7 @@ public class Dal {
                         ZImage.ready().want(entity.getAvatarURL()).lowPriority().save();
                 }
             }
-            baseApp.saveToFile(CONTACTS_FILE_NAME, LoganSquare.serialize(list, ContactEntity.class));
+            DBHelper.cache().save(CONTACTS_FILE_NAME, list, ContactEntity.class);
 
             return true;
         } catch (IOException e) {
@@ -71,24 +71,6 @@ public class Dal {
         }
     }
 
-
-    private static List<ContactEntity> readListFromJson(BaseApplication baseApp) {
-        boolean isFileExist = baseApp.isLocalFileExist(CONTACTS_FILE_NAME);
-
-        if (!isFileExist)
-            return null;
-
-        try {
-            String content = baseApp.readFromFile(CONTACTS_FILE_NAME);
-            return LoganSquare.parseList(content, ContactEntity.class);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            ZIO.deleteFile(baseApp.getFilePath() + CONTACTS_FILE_NAME);
-        }
-
-        return null;
-    }
 
     /**
      * @param baseUrl  地址

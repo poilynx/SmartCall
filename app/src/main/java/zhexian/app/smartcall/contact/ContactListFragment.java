@@ -87,7 +87,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         letterSideBar = ((LetterSideBar) view.findViewById(R.id.contact_letter_side_bar));
         letterSideBar.setOnLetterChangedListener(this);
 
-        mTotalContacts = Dal.getList(mBaseApp);
+        mTotalContacts = Dal.getList();
         mSearchContacts = new ArrayList<>(mTotalContacts);
         generateIndexMap(mTotalContacts);
         letterSideBar.Init(mLetterList);
@@ -404,7 +404,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
             if (!Dal.SaveToFile(mBaseApp, result))
                 return false;
 
-            List<ContactEntity> temp = Dal.getList(mBaseApp);
+            List<ContactEntity> temp = Dal.getList();
             cleanLocalAvatar(mTotalContacts, temp);
 
             mTotalContacts = temp;

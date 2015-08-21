@@ -8,9 +8,8 @@ import android.widget.ImageView;
 import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
+import zhexian.app.smartcall.lib.DBHelper;
 import zhexian.app.smartcall.lib.ZIO;
-import zhexian.app.smartcall.lib.ZString;
-import zhexian.app.smartcall.tools.Utils;
 
 /**
  * 图片管理类，访问网络图片，保存在本地
@@ -92,26 +91,16 @@ public class ZImage {
      * @return
      */
     public Bitmap getLocalBitMap(String url) {
-        if (url.isEmpty()) {
+        if (url.isEmpty())
             return placeHolderBitmap;
-        }
 
         Bitmap bitmap = getFromMemoryCache(url);
 
-        if (bitmap != null) {
+        if (bitmap != null)
             return bitmap;
-        }
 
-        String cachedUrl = ZString.getFileCachedDir(url, mBaseApp.getFilePath());
-
-        if (ZIO.isExist(cachedUrl)) {
-            bitmap = Utils.getBitMap(cachedUrl);
-
-            if (bitmap != null) {
-                return bitmap;
-            }
-        }
-        return placeHolderBitmap;
+        bitmap = DBHelper.cache().getBitmap(url);
+        return bitmap == null ? placeHolderBitmap : bitmap;
     }
 
 
@@ -122,21 +111,9 @@ public class ZImage {
      */
     public void deleteFromLocal(String httpUrl) {
         mMemoryCache.remove(httpUrl);
-        String cachedUrl = ZString.getFileCachedDir(httpUrl, mBaseApp.getFilePath());
+        String cachedUrl = DBHelper.cache().trans2Local(httpUrl);
         ZIO.deleteFile(cachedUrl);
         ContactSQLHelper.getInstance().deleteFilePath(httpUrl);
-    }
-
-    /**
-     * 保存图片到本地，同时记录在数据表里
-     *
-     * @param bitmap
-     * @param httpUrl
-     * @param cachedUrl
-     */
-    public void saveToLocal(Bitmap bitmap, String httpUrl, String cachedUrl) {
-        ZIO.saveBitmapToDisk(bitmap, cachedUrl);
-        ContactSQLHelper.getInstance().addFilePath(httpUrl, cachedUrl);
     }
 
     Bitmap getFromMemoryCache(String url) {
@@ -174,19 +151,16 @@ public class ZImage {
         }
 
         loadEmpty(imageView, placeHolder);
-        String cachedUrl = ZString.getFileCachedDir(url, mBaseApp.getFilePath());
 
-        if (ZIO.isExist(cachedUrl)) {
-            bitmap = Utils.getScaledBitMap(cachedUrl, width, height);
+        bitmap = DBHelper.cache().getBitmap(url, width, height);
 
-            if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
 
-                if (cacheType == CacheType.DiskMemory || cacheType == CacheType.Memory)
-                    putToMemoryCache(url, bitmap);
+            if (cacheType == CacheType.DiskMemory || cacheType == CacheType.Memory)
+                putToMemoryCache(url, bitmap);
 
-                return;
-            }
+            return;
         }
         ImageTaskManager.getInstance().addTask(new LoadImageTask(mBaseApp, imageView, url, width, height, cacheType), workType);
     }

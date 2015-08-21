@@ -3,8 +3,9 @@ package zhexian.app.smartcall.image;
 import android.graphics.Bitmap;
 
 import zhexian.app.smartcall.base.BaseApplication;
+import zhexian.app.smartcall.call.ContactSQLHelper;
+import zhexian.app.smartcall.lib.DBHelper;
 import zhexian.app.smartcall.lib.ZHttp;
-import zhexian.app.smartcall.lib.ZString;
 
 /**
  * 图片下载功能
@@ -24,15 +25,14 @@ public class SaveImageTask extends BaseImageAsyncTask {
 
     @Override
     public void run() {
-        String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
-
         if (baseApp.isNetworkWifi()) {
             Bitmap bitmap = ZHttp.getBitmap(url, width, height);
 
-            if (bitmap != null && bitmap.getByteCount() > 0)
-                ZImage.ready().saveToLocal(bitmap, url, cachedUrl);
+            if (bitmap != null && bitmap.getByteCount() > 0) {
+                DBHelper.cache().save(url, bitmap);
+                ContactSQLHelper.getInstance().addFilePath(url, DBHelper.cache().trans2Local(url));
+            }
         }
-
         ImageTaskManager.getInstance().Done(getTaskId());
     }
 

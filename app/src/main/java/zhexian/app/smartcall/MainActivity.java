@@ -18,6 +18,7 @@ import zhexian.app.smartcall.base.BaseActivity;
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
 import zhexian.app.smartcall.image.ZImage;
+import zhexian.app.smartcall.lib.DBHelper;
 import zhexian.app.smartcall.tools.Utils;
 
 public class MainActivity extends BaseActivity {
@@ -36,6 +37,7 @@ public class MainActivity extends BaseActivity {
         BaseApplication baseApp = (BaseApplication) getApplication();
         ZImage.Init(baseApp);
         ContactSQLHelper.Init(baseApp);
+        DBHelper.init(baseApp.getFilePath());
 
         if (baseApp.getScreenWidth() == 0) {
             DisplayMetrics dm = new DisplayMetrics();
@@ -128,7 +130,7 @@ public class MainActivity extends BaseActivity {
 
             intro_count_second--;
 
-            if (intro_count_second == 0) {
+            if (intro_count_second <= 0) {
                 _confirmText.setText("知道啦");
                 _confirmBtn.setEnabled(true);
                 _btnEnableTimer.cancel();

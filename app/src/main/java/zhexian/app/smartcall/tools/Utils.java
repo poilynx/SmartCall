@@ -14,6 +14,10 @@ import java.io.IOException;
 
 public class Utils {
 
+    public static final String DIR_PERMANENT = "zPermanent";
+    public static final String DIR_CACHE = "zCache";
+
+
     public static ObjectAnimator GenerateColorAnimator(Context context, int animatorID, Object target) {
         ObjectAnimator colorAnimation = (ObjectAnimator) AnimatorInflater.loadAnimator(context, animatorID);
         colorAnimation.setTarget(target);

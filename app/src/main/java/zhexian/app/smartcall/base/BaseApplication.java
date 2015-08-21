@@ -11,7 +11,6 @@ import java.util.Date;
 
 import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.lib.ZHttp;
-import zhexian.app.smartcall.lib.ZIO;
 
 public class BaseApplication extends Application {
     private static final String PARAM_CALL_SHORT = "zhexian.app.smartcall.base.PARAM_CALL_SHORT";
@@ -56,7 +55,6 @@ public class BaseApplication extends Application {
         mIsReadIntroduce = mSp.getBoolean(PARAM_IS_READ_INTRODUCE, false);
         mLastModifyTime = mSp.getLong(PARAM_LAST_MODIFY_TIME, new Date().getTime());
         mFilePath = Environment.isExternalStorageEmulated() ? getExternalFilesDir(null).getAbsolutePath() : getFilesDir().getAbsolutePath();
-        mFilePath += "/";
         mNetWorkStatus = ZHttp.GetConnectType(this);
         mScreenWidth = mSp.getInt(PARAM_SCREEN_WIDTH, 0);
         mScreenHeight = mSp.getInt(PARAM_SCREEN_HEIGHT, 0);
@@ -64,20 +62,6 @@ public class BaseApplication extends Application {
         if (mImageCachePoolSize == 0)
             setImageCachePoolSize();
     }
-
-    public boolean saveToFile(String key, String content) {
-        ZIO.mkDirs(mFilePath);
-        return ZIO.writeToFile(mFilePath + key, content);
-    }
-
-    public String readFromFile(String key) {
-        return ZIO.readFromFile(mFilePath + key);
-    }
-
-    public boolean isLocalFileExist(String key) {
-        return ZIO.isExist(mFilePath + key);
-    }
-
     public void setNetworkStatus(ZHttp.NetworkStatus mNetworkStatus) {
         this.mNetWorkStatus = mNetworkStatus;
     }

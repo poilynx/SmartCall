@@ -9,10 +9,9 @@ import android.widget.ImageView;
 import java.lang.ref.WeakReference;
 
 import zhexian.app.smartcall.base.BaseApplication;
+import zhexian.app.smartcall.call.ContactSQLHelper;
+import zhexian.app.smartcall.lib.DBHelper;
 import zhexian.app.smartcall.lib.ZHttp;
-import zhexian.app.smartcall.lib.ZIO;
-import zhexian.app.smartcall.lib.ZString;
-import zhexian.app.smartcall.tools.Utils;
 
 /**
  * 图片加载任务
@@ -38,19 +37,16 @@ public class LoadImageTask extends BaseImageAsyncTask {
 
     @Override
     public void run() {
-        String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFilePath());
-        Bitmap bitmap = null;
-
-        if (ZIO.isExist(cachedUrl))
-            bitmap = Utils.getScaledBitMap(cachedUrl, width, height);
+        Bitmap bitmap = DBHelper.cache().getBitmap(url, width, height);
 
         if (bitmap == null && baseApp.isNetworkWifi()) {
             bitmap = ZHttp.getBitmap(url, width, height);
 
             boolean isCacheToDisk = mCacheType == ZImage.CacheType.Disk || mCacheType == ZImage.CacheType.DiskMemory;
-
-            if (isCacheToDisk && bitmap != null && bitmap.getByteCount() > 0)
-                ZImage.ready().saveToLocal(bitmap, url, cachedUrl);
+            if (isCacheToDisk && bitmap != null && bitmap.getByteCount() > 0) {
+                DBHelper.cache().save(url, bitmap);
+                ContactSQLHelper.getInstance().addFilePath(url, DBHelper.cache().trans2Local(url));
+            }
         }
 
         if (bitmap != null) {

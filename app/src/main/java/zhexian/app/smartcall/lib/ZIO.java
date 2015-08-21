@@ -1,11 +1,9 @@
 package zhexian.app.smartcall.lib;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,27 +12,18 @@ import java.io.InputStreamReader;
 
 public class ZIO {
 
+    /**
+     * 清空文件夹
+     *
+     * @param dir
+     * @return
+     */
     public static boolean emptyDir(File dir) {
         if (dir.isDirectory()) {
             for (File f : dir.listFiles())
                 emptyDir(f);
         }
         return dir.delete();
-    }
-
-    public static boolean emptyDir(String url) {
-        File file = new File(url);
-        if (file.exists())
-            return emptyDir(file);
-
-        return true;
-    }
-
-
-    public static void mkDirs(String url) {
-        File file = new File(url);
-        if (!file.exists())
-            file.mkdirs();
     }
 
     public static boolean isExist(String url) {
@@ -47,23 +36,25 @@ public class ZIO {
         return file.delete();
     }
 
-    public static boolean createFile(String url) {
+    public static void mkDirs(String url) {
         File file = new File(url);
+        if (!file.exists())
+            file.mkdirs();
+    }
 
+    public static boolean createFile(File file) {
         if (file.exists())
             return true;
-
-        String dir = url.substring(0, url.lastIndexOf('/'));
-        mkDirs(dir);
-
         try {
+
+            mkDirs(file.getParent());
+
             file.createNewFile();
             return true;
         } catch (IOException e) {
             return false;
         }
     }
-
 
     public static boolean writeToFile(String url, String content) {
         FileWriter fs = null;
@@ -187,26 +178,5 @@ public class ZIO {
             }
         }
         return count;
-    }
-
-    public static void saveBitmapToDisk(Bitmap bitmap, String cachedUrl) {
-        ZIO.createFile(cachedUrl);
-        FileOutputStream fos = null;
-        try {
-            if (bitmap != null && bitmap.getByteCount() > 0) {
-                fos = new FileOutputStream(cachedUrl);
-                Bitmap.CompressFormat format = cachedUrl.toLowerCase().indexOf("png") > 0 ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
-                bitmap.compress(format, 75, fos);
-                fos.flush();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                fos.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
