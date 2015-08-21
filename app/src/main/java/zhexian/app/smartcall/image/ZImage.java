@@ -9,7 +9,6 @@ import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
 import zhexian.app.smartcall.lib.DBHelper;
-import zhexian.app.smartcall.lib.ZIO;
 
 /**
  * 图片管理类，访问网络图片，保存在本地
@@ -62,12 +61,12 @@ public class ZImage {
     }
 
     /**
-     * 使用占位符
+     * 使用本地资源
      *
      * @param imageView
      * @param placeHolder
      */
-    private void loadEmpty(ImageView imageView, int placeHolder) {
+    private void loadDrawable(ImageView imageView, int placeHolder) {
         if (placeHolder <= 0) {
             imageView.setImageBitmap(placeHolderBitmap);
             return;
@@ -120,8 +119,7 @@ public class ZImage {
      */
     public void deleteFromLocal(String httpUrl) {
         mMemoryCache.remove(httpUrl);
-        String cachedUrl = DBHelper.cache().trans2Local(httpUrl);
-        ZIO.deleteFile(cachedUrl);
+        DBHelper.cache().delete(httpUrl);
         ContactSQLHelper.getInstance().deleteFilePath(httpUrl);
     }
 
@@ -147,7 +145,7 @@ public class ZImage {
      */
     private void load(String url, ImageView imageView, int width, int height, CacheType cacheType, ImageTaskManager.WorkType workType, int placeHolder) {
         if (url.isEmpty()) {
-            loadEmpty(imageView, placeHolder);
+            loadDrawable(imageView, placeHolder);
             return;
         }
 
@@ -159,7 +157,7 @@ public class ZImage {
             return;
         }
 
-        loadEmpty(imageView, placeHolder);
+        loadDrawable(imageView, placeHolder);
 
         bitmap = DBHelper.cache().getBitmap(url, width, height);
 

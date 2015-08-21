@@ -349,10 +349,12 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
 
             for (ContactEntity newContact : newContactsList) {
                 if (oldPhone.equals(newContact.getPhone())) {
-                    isFound = true;
                     //用户是否修改了头像
                     if (!oldAvatar.equals(newContact.getAvatarURL()))
                         ZImage.ready().deleteFromLocal(oldAvatar);
+
+                    isFound = true;
+                    break;
                 }
             }
             //用户被删除了，则把本地图片也删除
@@ -363,7 +365,6 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
 
     static class NotifyHandler extends Handler {
         WeakReference<BaseActivity> baseActivity;
-
         NotifyHandler(BaseActivity _activity) {
             baseActivity = new WeakReference<>(_activity);
         }

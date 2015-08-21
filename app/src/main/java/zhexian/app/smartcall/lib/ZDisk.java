@@ -252,6 +252,11 @@ public class ZDisk {
         return null;
     }
 
+    /**
+     * 删除文件
+     *
+     * @param url
+     */
     public void delete(String url) {
         url = trans2Local(url);
         ZIO.deleteFile(url);
@@ -262,5 +267,16 @@ public class ZDisk {
      */
     public void clean() {
         ZIO.emptyDir(new File(mStoreDir));
+    }
+
+
+    /**
+     * 获取文件夹容量描述
+     * 单位取决于容量数据，比如100MB，1GB
+     *
+     * @return
+     */
+    public String getDirSize() {
+        return ZIO.getDirSizeInfo(mStoreDir, "空空如也");
     }
 }
