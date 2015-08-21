@@ -78,10 +78,18 @@ public class ZImage {
 
         if (bitmap != null) {
             imageView.setImageBitmap(bitmap);
-        } else {
-            bitmap = BitmapFactory.decodeResource(mBaseApp.getResources(), placeHolder);
-            putToMemoryCache(key, bitmap);
+            return;
         }
+
+        bitmap = BitmapFactory.decodeResource(mBaseApp.getResources(), placeHolder);
+
+        if (bitmap != null) {
+            putToMemoryCache(key, bitmap);
+            imageView.setImageBitmap(bitmap);
+            return;
+        }
+
+        imageView.setImageBitmap(placeHolderBitmap);
     }
 
     /**
@@ -90,6 +98,7 @@ public class ZImage {
      * @param url
      * @return
      */
+
     public Bitmap getLocalBitMap(String url) {
         if (url.isEmpty())
             return placeHolderBitmap;
