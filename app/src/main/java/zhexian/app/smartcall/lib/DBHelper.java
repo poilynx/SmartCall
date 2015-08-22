@@ -11,8 +11,11 @@ public class DBHelper {
     private static ZDisk diskCache;
 
     public static void init(String path) {
-        diskPermanent = new ZDisk(String.format("%s/%s/", path, Utils.DIR_PERMANENT));
-        diskCache = new ZDisk(String.format("%s/%s/", path, Utils.DIR_CACHE));
+        if (diskPermanent == null)
+            diskPermanent = new ZDisk(String.format("%s/%s/", path, Utils.DIR_PERMANENT));
+
+        if (diskCache == null)
+            diskCache = new ZDisk(String.format("%s/%s/", path, Utils.DIR_CACHE));
     }
 
     /**

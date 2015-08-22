@@ -1,6 +1,7 @@
 package zhexian.app.smartcall.image;
 
-import java.util.HashMap;
+import android.support.v4.util.ArrayMap;
+
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -12,7 +13,7 @@ public class ImageTaskManager {
 
     private static final int MAX_OPERATE_THREAD_SIZE = 5;
     private static final ImageTaskManager imageTaskManager = new ImageTaskManager();
-    private HashMap<String, BaseImageAsyncTask> taskHaspMap;
+    private ArrayMap<String, BaseImageAsyncTask> taskHaspMap;
     private LinkedList<String> taskUrlList;
     private ExecutorService threadPool;
     private int currentOperateSize = 0;
@@ -20,7 +21,7 @@ public class ImageTaskManager {
     private int loadTaskCount = 0;
     private ImageTaskManager() {
         threadPool = Executors.newFixedThreadPool(MAX_OPERATE_THREAD_SIZE);
-        taskHaspMap = new HashMap<>();
+        taskHaspMap = new ArrayMap<>();
         taskUrlList = new LinkedList<>();
     }
 
