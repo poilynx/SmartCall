@@ -35,8 +35,8 @@ public class BaseApplication extends Application {
     private String mUserName;
     private String mPassword;
     private boolean mIsLogin;
-    private String mFileRootPath;
-    private String mFileCachePath;
+    private String mFileRootDir;
+    private String mCacheDir;
     private ZHttp.NetworkStatus mNetWorkStatus;
     private int mScreenWidth;
     private int mScreenHeight;
@@ -57,12 +57,15 @@ public class BaseApplication extends Application {
         mLastModifyTime = mSp.getLong(PARAM_LAST_MODIFY_TIME, new Date().getTime());
 
         if (Environment.isExternalStorageEmulated()) {
-            mFileRootPath = getExternalFilesDir(null).getAbsolutePath();
-            mFileCachePath = getExternalCacheDir().getAbsolutePath();
+            mFileRootDir = getExternalFilesDir(null).getAbsolutePath();
+            mCacheDir = getExternalCacheDir().getAbsolutePath();
         } else {
-            mFileRootPath = getFilesDir().getAbsolutePath();
-            mFileCachePath = getCacheDir().getAbsolutePath();
+            mFileRootDir = getFilesDir().getAbsolutePath();
+            mCacheDir = getCacheDir().getAbsolutePath();
         }
+
+        mFileRootDir += "/";
+        mCacheDir += "/";
 
         mNetWorkStatus = ZHttp.GetConnectType(this);
         mScreenWidth = mSp.getInt(PARAM_SCREEN_WIDTH, 0);
@@ -84,12 +87,12 @@ public class BaseApplication extends Application {
         return mNetWorkStatus == ZHttp.NetworkStatus.Wifi;
     }
 
-    public String getFileRootPath() {
-        return mFileRootPath;
+    public String getFileRootDir() {
+        return mFileRootDir;
     }
 
-    public String getFileCachePath() {
-        return mFileCachePath;
+    public String getFileCacheDir() {
+        return mCacheDir;
     }
 
     public boolean getIsCallShort() {

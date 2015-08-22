@@ -13,7 +13,7 @@ public class ImageTaskManager {
 
     private static final int MAX_OPERATE_THREAD_SIZE = 5;
     private static final ImageTaskManager imageTaskManager = new ImageTaskManager();
-    private ArrayMap<String, BaseImageAsyncTask> taskHaspMap;
+    private ArrayMap<String, BaseImageAsyncTask> taskHashMap;
     private LinkedList<String> taskUrlList;
     private ExecutorService threadPool;
     private int currentOperateSize = 0;
@@ -21,7 +21,7 @@ public class ImageTaskManager {
     private int loadTaskCount = 0;
     private ImageTaskManager() {
         threadPool = Executors.newFixedThreadPool(MAX_OPERATE_THREAD_SIZE);
-        taskHaspMap = new ArrayMap<>();
+        taskHashMap = new ArrayMap<>();
         taskUrlList = new LinkedList<>();
     }
 
@@ -46,11 +46,11 @@ public class ImageTaskManager {
         }
 
         if (saveTaskCount > 0 && taskID == BaseImageAsyncTask.LOAD_IMAGE_TASK_ID) {
-            taskHaspMap.remove(url);
+            taskHashMap.remove(url);
 
-            String loadKey = String.format("%d_%s", BaseImageAsyncTask.SAVE_IMAGE_TASK_ID, task.getUrl());
-            if (taskUrlList.remove(loadKey)) {
-                taskHaspMap.remove(loadKey);
+            String saveKey = String.format("%d_%s", BaseImageAsyncTask.SAVE_IMAGE_TASK_ID, task.getUrl());
+            if (taskUrlList.remove(saveKey)) {
+                taskHashMap.remove(saveKey);
                 saveTaskCount--;
             }
         }
@@ -60,19 +60,19 @@ public class ImageTaskManager {
         else
             taskUrlList.addFirst(url);
 
-        taskHaspMap.put(url, task);
+        taskHashMap.put(url, task);
         execTask();
     }
 
     private synchronized Runnable getTask() {
-        int size = taskHaspMap.size();
+        int size = taskHashMap.size();
 
         if (size == 0)
             return null;
 
         currentOperateSize++;
         String key = taskUrlList.removeLast();
-        return taskHaspMap.remove(key);
+        return taskHashMap.remove(key);
     }
 
     private void execTask() {
