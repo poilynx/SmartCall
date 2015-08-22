@@ -83,7 +83,7 @@ class CallFlatWindowManager {
             imageView.setVisibility(View.GONE);
             return;
         }
-        String cachedUrl = ZString.getFileCachedDir(url, String.format("%s/%s/", baseApp.getFilePath(), Utils.DIR_CACHE));
+        String cachedUrl = ZString.getFileCachedDir(url, String.format("%s/", baseApp.getFileCachePath()));
         int IMAGE_SIZE = 128;
 
         if (ZIO.isExist(cachedUrl))
