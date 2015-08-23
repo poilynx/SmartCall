@@ -45,8 +45,8 @@ public class BaseApplication extends Application {
         super.onCreate();
         mSp = PreferenceManager.getDefaultSharedPreferences(this);
         mServiceUrl = mSp.getString(PARAM_SERVICE_URL, getString(R.string.service_url));
-        mUserName = mSp.getString(PARAM_USER_NAME, "");
-        mPassword = mSp.getString(PARAM_PASSWORD, "");
+        mUserName = mSp.getString(PARAM_USER_NAME, "chenjunjie");
+        mPassword = mSp.getString(PARAM_PASSWORD, "123456");
         mIsCallShort = mSp.getBoolean(PARAM_CALL_SHORT, true);
         mIsLogin = mSp.getBoolean(PARAM_IS_LOGIN, false);
         mAvatarWidth = mSp.getInt(PARAM_AVATAR_WIDTH, 0);

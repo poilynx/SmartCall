@@ -42,16 +42,15 @@ public class ZIO {
             file.mkdirs();
     }
 
-    public static boolean createFile(File file) {
+    public static boolean createNewFile(File file) {
         if (file.exists())
             return true;
+
         try {
-
-            mkDirs(file.getParent());
-
             file.createNewFile();
             return true;
         } catch (IOException e) {
+            Log.e("存储出错", e.getMessage());
             return false;
         }
     }

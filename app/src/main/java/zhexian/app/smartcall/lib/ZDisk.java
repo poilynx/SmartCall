@@ -2,6 +2,7 @@ package zhexian.app.smartcall.lib;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.bluelinelabs.logansquare.LoganSquare;
 
@@ -29,6 +30,7 @@ public class ZDisk {
 
     public ZDisk(String mStoreDir) {
         this.mStoreDir = mStoreDir;
+        ZIO.mkDirs(mStoreDir);
     }
 
     /**
@@ -45,6 +47,7 @@ public class ZDisk {
             return mStoreDir + url;
 
         url = url.substring(url.indexOf('/', HTTP_FIRST_SPLIT_POS) + 1);
+        url = url.replace('/', '_');
         url = mStoreDir + url;
         return url;
     }
@@ -74,7 +77,7 @@ public class ZDisk {
 
         url = trans2Local(url);
         File file = new File(url);
-        ZIO.createFile(file);
+        ZIO.createNewFile(file);
         FileOutputStream fos = null;
 
         try {
@@ -85,6 +88,7 @@ public class ZDisk {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("存储出错", e.getMessage());
         } finally {
             try {
                 fos.close();
@@ -107,7 +111,7 @@ public class ZDisk {
 
         url = trans2Local(url);
         File file = new File(url);
-        ZIO.createFile(file);
+        ZIO.createNewFile(file);
         FileOutputStream fos;
 
         try {
@@ -137,7 +141,7 @@ public class ZDisk {
 
         url = trans2Local(url);
         File file = new File(url);
-        ZIO.createFile(file);
+        ZIO.createNewFile(file);
         FileOutputStream fos;
 
         try {
