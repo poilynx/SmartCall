@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import zhexian.app.smartcall.R;
 import zhexian.app.smartcall.base.BaseApplication;
+import zhexian.app.smartcall.lib.DBHelper;
 import zhexian.app.smartcall.lib.ZContact;
 import zhexian.app.smartcall.lib.ZIO;
 import zhexian.app.smartcall.lib.ZString;
@@ -83,7 +84,7 @@ class CallFlatWindowManager {
             imageView.setVisibility(View.GONE);
             return;
         }
-        String cachedUrl = ZString.getFileCachedDir(url, baseApp.getFileCacheDir());
+        String cachedUrl = ZString.getFileCachedDir(url, String.format("%s%s/", baseApp.getFileRootDir(), DBHelper.DIR_CACHE));
         int IMAGE_SIZE = 128;
 
         if (ZIO.isExist(cachedUrl))

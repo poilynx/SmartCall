@@ -37,7 +37,7 @@ public class MainActivity extends BaseActivity {
         BaseApplication baseApp = (BaseApplication) getApplication();
         ZImage.Init(baseApp);
         ContactSQLHelper.Init(baseApp);
-        DBHelper.init(baseApp.getFileRootDir(), baseApp.getFileCacheDir());
+        DBHelper.init(baseApp.getFileRootDir());
 
         if (baseApp.getScreenWidth() == 0) {
             DisplayMetrics dm = new DisplayMetrics();

@@ -36,7 +36,6 @@ public class BaseApplication extends Application {
     private String mPassword;
     private boolean mIsLogin;
     private String mFileRootDir;
-    private String mCacheDir;
     private ZHttp.NetworkStatus mNetWorkStatus;
     private int mScreenWidth;
     private int mScreenHeight;
@@ -56,16 +55,8 @@ public class BaseApplication extends Application {
         mIsReadIntroduce = mSp.getBoolean(PARAM_IS_READ_INTRODUCE, false);
         mLastModifyTime = mSp.getLong(PARAM_LAST_MODIFY_TIME, new Date().getTime());
 
-        if (Environment.isExternalStorageEmulated()) {
-            mFileRootDir = getExternalFilesDir(null).getAbsolutePath();
-            mCacheDir = getExternalCacheDir().getAbsolutePath();
-        } else {
-            mFileRootDir = getFilesDir().getAbsolutePath();
-            mCacheDir = getCacheDir().getAbsolutePath();
-        }
-
+        mFileRootDir = Environment.isExternalStorageEmulated() ? getExternalFilesDir(null).getAbsolutePath() : getFilesDir().getAbsolutePath();
         mFileRootDir += "/";
-        mCacheDir += "/";
 
         mNetWorkStatus = ZHttp.GetConnectType(this);
         mScreenWidth = mSp.getInt(PARAM_SCREEN_WIDTH, 0);
@@ -89,10 +80,6 @@ public class BaseApplication extends Application {
 
     public String getFileRootDir() {
         return mFileRootDir;
-    }
-
-    public String getFileCacheDir() {
-        return mCacheDir;
     }
 
     public boolean getIsCallShort() {

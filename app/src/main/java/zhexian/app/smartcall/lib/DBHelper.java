@@ -5,17 +5,17 @@ package zhexian.app.smartcall.lib;
  * 存储管理类
  */
 public class DBHelper {
-    public static final String DIR_PERMANENT = "permanent";
-
-    private static ZDisk diskPermanent;
+    public static final String DIR_CORE = "core";
+    public static final String DIR_CACHE = "zCache";
+    private static ZDisk diskCore;
     private static ZDisk diskCache;
 
-    public static void init(String rootDir, String cacheDir) {
-        if (diskPermanent == null)
-            diskPermanent = new ZDisk(String.format("%s%s/", rootDir, DIR_PERMANENT));
+    public static void init(String path) {
+        if (diskCore == null)
+            diskCore = new ZDisk(String.format("%s%s/", path, DIR_CORE));
 
         if (diskCache == null)
-            diskCache = new ZDisk(cacheDir);
+            diskCache = new ZDisk(String.format("%s%s/", path, DIR_CACHE));
     }
 
     /**
@@ -23,8 +23,8 @@ public class DBHelper {
      *
      * @return
      */
-    public static ZDisk permanent() {
-        return diskPermanent;
+    public static ZDisk core() {
+        return diskCore;
     }
 
     /**
