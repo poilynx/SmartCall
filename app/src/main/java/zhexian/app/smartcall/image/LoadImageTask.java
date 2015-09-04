@@ -12,6 +12,7 @@ import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
 import zhexian.app.smartcall.lib.DBHelper;
 import zhexian.app.smartcall.lib.ZHttp;
+import zhexian.app.smartcall.tools.Utils;
 
 /**
  * 图片加载任务
@@ -40,12 +41,17 @@ public class LoadImageTask extends BaseImageAsyncTask {
         Bitmap bitmap = DBHelper.cache().getBitmap(url, width, height);
 
         if (bitmap == null && baseApp.isNetworkWifi()) {
-            bitmap = ZHttp.getBitmap(url, width, height);
+            byte[] bytes = ZHttp.getBytes(url);
 
-            boolean isCacheToDisk = mCacheType == ZImage.CacheType.Disk || mCacheType == ZImage.CacheType.DiskMemory;
-            if (isCacheToDisk && bitmap != null && bitmap.getByteCount() > 0) {
-                DBHelper.cache().save(url, bitmap);
-                ContactSQLHelper.getInstance().addFilePath(url, DBHelper.cache().trans2Local(url));
+
+            if (bytes != null && bytes.length > 0) {
+                bitmap = Utils.getScaledBitMap(bytes, width, height);
+                DBHelper.cache().save(url, bytes);
+
+                boolean isCacheToDisk = mCacheType == ZImage.CacheType.Disk || mCacheType == ZImage.CacheType.DiskMemory;
+
+                if (isCacheToDisk)
+                    ContactSQLHelper.getInstance().addFilePath(url, DBHelper.cache().trans2Local(url));
             }
         }
 

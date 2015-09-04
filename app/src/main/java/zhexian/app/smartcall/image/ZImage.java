@@ -2,6 +2,7 @@ package zhexian.app.smartcall.image;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.text.TextUtils;
 import android.util.LruCache;
 import android.widget.ImageView;
 
@@ -99,7 +100,7 @@ public class ZImage {
      */
 
     public Bitmap getLocalBitMap(String url) {
-        if (url.isEmpty())
+        if (TextUtils.isEmpty(url))
             return placeHolderBitmap;
 
         Bitmap bitmap = getFromMemoryCache(url);
@@ -144,7 +145,7 @@ public class ZImage {
      * @param placeHolder
      */
     private void load(String url, ImageView imageView, int width, int height, CacheType cacheType, ImageTaskManager.WorkType workType, int placeHolder) {
-        if (url.isEmpty()) {
+        if (TextUtils.isEmpty(url)) {
             loadDrawable(imageView, placeHolder);
             return;
         }

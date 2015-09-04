@@ -1,7 +1,5 @@
 package zhexian.app.smartcall.image;
 
-import android.graphics.Bitmap;
-
 import zhexian.app.smartcall.base.BaseApplication;
 import zhexian.app.smartcall.call.ContactSQLHelper;
 import zhexian.app.smartcall.lib.DBHelper;
@@ -26,10 +24,10 @@ public class SaveImageTask extends BaseImageAsyncTask {
     @Override
     public void run() {
         if (baseApp.isNetworkWifi()) {
-            Bitmap bitmap = ZHttp.getBitmap(url, width, height);
+            byte[] bytes = ZHttp.getBytes(url);
 
-            if (bitmap != null && bitmap.getByteCount() > 0) {
-                DBHelper.cache().save(url, bitmap);
+            if (bytes != null && bytes.length > 0) {
+                DBHelper.cache().save(url, bytes);
                 ContactSQLHelper.getInstance().addFilePath(url, DBHelper.cache().trans2Local(url));
             }
         }

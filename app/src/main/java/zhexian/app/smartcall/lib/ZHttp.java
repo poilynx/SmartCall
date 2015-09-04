@@ -1,7 +1,6 @@
 package zhexian.app.smartcall.lib;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
@@ -12,8 +11,6 @@ import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import zhexian.app.smartcall.tools.Utils;
 
 
 public class ZHttp {
@@ -55,19 +52,18 @@ public class ZHttp {
         return null;
     }
 
-    public static Bitmap getBitmap(String url, int width, int height) {
-        Bitmap bitmap = null;
-
+    public static byte[] getBytes(String url) {
         try {
             Response response = execute(url);
+
             if (null == response)
                 return null;
 
-            bitmap = Utils.getScaledBitMap(response.body().bytes(), width, height);
+            return response.body().bytes();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return bitmap;
+        return null;
     }
 
     public static NetworkStatus GetConnectType(Context context) {

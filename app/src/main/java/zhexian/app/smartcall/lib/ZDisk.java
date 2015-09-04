@@ -65,26 +65,27 @@ public class ZDisk {
     }
 
     /**
-     * 写入Bitmap
+     * 写入bytes
      *
      * @param url
-     * @param bitmap
+     * @param bytes
      * @return
      */
-    public boolean save(String url, Bitmap bitmap) {
-        if (bitmap == null || bitmap.getByteCount() == 0)
-            return true;
+    public boolean save(String url, byte[] bytes) {
+        if (bytes == null || bytes.length == 0)
+            return false;
 
         url = trans2Local(url);
         File file = new File(url);
+
+        if (file.exists())
+            return true;
+
         ZIO.createNewFile(file);
         FileOutputStream fos = null;
-
         try {
             fos = new FileOutputStream(file);
-            Bitmap.CompressFormat format = url.toLowerCase().indexOf("png") > 0 ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG;
-            bitmap.compress(format, 75, fos);
-            fos.close();
+            fos.write(bytes);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
