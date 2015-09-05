@@ -39,12 +39,12 @@ public class ZHttp {
     }
 
     public static String getString(String urlStr) {
-        Response response = execute(urlStr);
-
-        if (response == null)
-            return null;
 
         try {
+            Response response = execute(urlStr);
+
+            if (response == null)
+                return null;
             return response.body().string();
         } catch (IOException e) {
             e.printStackTrace();
