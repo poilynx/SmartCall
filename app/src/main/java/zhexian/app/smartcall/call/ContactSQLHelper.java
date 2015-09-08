@@ -40,9 +40,10 @@ public class ContactSQLHelper {
     public CallUserEntity getContact(String phoneNo) {
         Cursor cursor = getDb(true).rawQuery("select userName,jobTitle,avatarUrl from contact where phoneNo=? or shortPhoneNo=?", new String[]{phoneNo, phoneNo});
 
-        if (!cursor.moveToFirst())
+        if (!cursor.moveToFirst()) {
+            cursor.close();
             return null;
-
+        }
         CallUserEntity entity = new CallUserEntity();
         entity.setName(cursor.getString(0));
         entity.setJob(cursor.getString(1));
