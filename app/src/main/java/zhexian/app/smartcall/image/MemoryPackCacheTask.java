@@ -9,6 +9,11 @@ import zhexian.app.smartcall.call.ContactSQLHelper;
  */
 public class MemoryPackCacheTask extends BaseImageAsyncTask {
     private static final String TASK_URL = "zhexian.app.smartcall.image.MemoryPackCacheTask";
+    private int mAvatarSize;
+
+    public MemoryPackCacheTask(int mAvatarSize) {
+        this.mAvatarSize = mAvatarSize;
+    }
 
     @Override
     public int getTaskId() {
@@ -27,7 +32,7 @@ public class MemoryPackCacheTask extends BaseImageAsyncTask {
         while (cursor.moveToNext()) {
             String httpUrl = cursor.getString(0);
             if (ZImage.ready().getFromMemoryCache(httpUrl) == null)
-                ImageTaskManager.getInstance().addTask(new MemoryCacheTask(httpUrl, cursor.getString(1)), ImageTaskManager.WorkType.LILO);
+                ImageTaskManager.getInstance().addTask(new MemoryCacheTask(httpUrl, cursor.getString(1), mAvatarSize, mAvatarSize), ImageTaskManager.WorkType.LILO);
         }
         cursor.close();
         ImageTaskManager.getInstance().Done(getTaskId());

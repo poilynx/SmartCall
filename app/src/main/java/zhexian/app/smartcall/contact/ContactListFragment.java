@@ -133,7 +133,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
         if (isNeedRefreshContacts && !isRequestData && !isLoadingImage)
             new LoadContactTask().execute(TRIGGER_AUTO_REFRESH);
         else
-            ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(), ImageTaskManager.WorkType.LILO);
+            ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(mBaseApp.getAvatarWidth()), ImageTaskManager.WorkType.LILO);
     }
 
     @Override
@@ -365,6 +365,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
 
     static class NotifyHandler extends Handler {
         WeakReference<BaseActivity> baseActivity;
+
         NotifyHandler(BaseActivity _activity) {
             baseActivity = new WeakReference<>(_activity);
         }
@@ -434,7 +435,7 @@ public class ContactListFragment extends Fragment implements LetterSideBar.OnLet
                     showImageProcessBar();
                 }
 
-                ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(), ImageTaskManager.WorkType.LILO);
+                ImageTaskManager.getInstance().addTask(new MemoryPackCacheTask(mBaseApp.getAvatarWidth()), ImageTaskManager.WorkType.LILO);
                 mBaseApp.setLastModifyTime(new Date().getTime());
             } else {
                 Utils.toast(mBaseApp, R.string.alert_refresh_failed);

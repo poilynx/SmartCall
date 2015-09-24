@@ -35,10 +35,6 @@ public class Utils {
         Toast.makeText(context, context.getString(stringID), Toast.LENGTH_SHORT).show();
     }
 
-    public static Bitmap getBitMap(String imgPath) {
-        return BitmapFactory.decodeFile(imgPath);
-    }
-
     public static Bitmap getScaledBitMap(String imgPath, int width, int height) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;

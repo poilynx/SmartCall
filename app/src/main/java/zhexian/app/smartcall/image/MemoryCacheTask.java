@@ -12,9 +12,14 @@ public class MemoryCacheTask extends BaseImageAsyncTask {
     private String httpPath;
     private String LocalPath;
 
-    public MemoryCacheTask(String httpPath, String localPath) {
+    private int mWidth;
+    private int mHeight;
+
+    public MemoryCacheTask(String httpPath, String localPath, int width, int height) {
         this.httpPath = httpPath;
         this.LocalPath = localPath;
+        mWidth = width;
+        mHeight = height;
     }
 
     @Override
@@ -32,7 +37,7 @@ public class MemoryCacheTask extends BaseImageAsyncTask {
         Bitmap bitmap = ZImage.ready().getFromMemoryCache(httpPath);
 
         if (bitmap == null) {
-            bitmap = Utils.getBitMap(LocalPath);
+            bitmap = Utils.getScaledBitMap(LocalPath, mWidth, mHeight);
 
             if (bitmap != null && bitmap.getByteCount() > 0)
                 ZImage.ready().putToMemoryCache(httpPath, bitmap);
