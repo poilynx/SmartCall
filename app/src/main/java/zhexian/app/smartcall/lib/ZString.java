@@ -50,6 +50,7 @@ public class ZString {
     public static String getFileCachedDir(String url, String cachedDir) {
         //change http://images.cnitblog.com/news_topic/apple.png to news_topic/apple.png
         url = url.substring(url.indexOf('/', HTTP_FIRST_SPLIT_POS) + 1);
+        url = url.replace('/', '_');
         url = cachedDir + url;
 
         return url;

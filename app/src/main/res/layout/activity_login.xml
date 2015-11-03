@@ -85,7 +85,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:text="账号："
-                    android:textSize="20sp" />
+                    android:textSize="18sp"/>
 
                 <EditText
                     android:id="@+id/login_user_name"
@@ -113,7 +113,7 @@
                     android:layout_height="match_parent"
                     android:gravity="center_vertical"
                     android:text="密码："
-                    android:textSize="20sp" />
+                    android:textSize="18sp"/>
 
                 <EditText
                     android:id="@+id/login_password"
