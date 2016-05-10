@@ -4,20 +4,21 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Request.Builder;
-import com.squareup.okhttp.Response;
-
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 public class ZHttp {
     private static OkHttpClient mOkHttpClient = new OkHttpClient();
 
     private ZHttp() {
-        mOkHttpClient.setConnectTimeout(18, TimeUnit.SECONDS);
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.connectTimeout(12, TimeUnit.SECONDS).readTimeout(12, TimeUnit.SECONDS);
+        mOkHttpClient = builder.build();
     }
 
     private static OkHttpClient getHttpClient() {
@@ -25,7 +26,7 @@ public class ZHttp {
     }
 
     private static Response execute(String url) {
-        Request request = new Builder().url(url).build();
+        Request request = new Request.Builder().url(url).build();
         try {
             Response response = getHttpClient().newCall(request).execute();
 
